@@ -1,0 +1,15 @@
+{
+  "name": "chatbot",
+  "version": "1.0.0",
+  "description": "My first bot",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "lyzs90",
+  "license": "MIT",
+  "dependencies": {
+    "botbuilder": "^3.4.2",
+    "restify": "^4.2.0"
+  }
+}
