@@ -24,5 +24,5 @@ server.post('/api/messages', connector.listen());
 //=============================================================================
 
 bot.dialog('/', function (session) {
-  session.send("Hello World");
+  session.send("Hi there, I'm still a young coconut. When I grow up, I aspire be able to hold my own in serious conversations.");
 });
