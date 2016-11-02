@@ -4,7 +4,9 @@
   "description": "Forever young",
   "main": "app.js",
   "scripts": {
-    "test": "./node_modules/.bin/mocha --reporter spec",
+    "test": "./node_modules/.bin/mocha",
+    "cover": "istanbul cover ./node_modules/mocha/bin/_mocha",
+	"coveralls": "npm run cover -- --report lcovonly && cat ./coverage/lcov.info | coveralls",
     "start": "node app.js"
   },
   "author": "lyzs90",
@@ -17,6 +19,7 @@
   },
   "devDependencies": {
     "coveralls": "^2.11.14",
+    "istanbul": "^0.4.5",
     "mocha-lcov-reporter": "^1.2.0"
   }
 }
