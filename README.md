@@ -19,4 +19,4 @@ A Node.js Chatbot built using the Microsoft Bot Framework. Coconut is a voraciou
 
 ## License
 
-Code released under [the MIT license](https://github.com/lyzs90/Coconut/blob/master/LICENSE.txt).
+Code released under [the MIT license](https://github.com/lyzs90/Coconut/blob/master/LICENSE).
