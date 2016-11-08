@@ -7,9 +7,9 @@ var builder = require('botbuilder');
 
 // Setup Restify Server
 var server = restify.createServer();
-server.listen(process.env.port || process.env.PORT || 3978, function () {
-    console.log('%s listening to %s', server.name, server.url);
-});
+server.listen(process.env.port || process.env.PORT || 3978,
+    () => console.log('%s listening to %s', server.name, server.url)
+);
 
 // Create chat bot
 var connector = new builder.ChatConnector({
@@ -25,22 +25,20 @@ server.post('/api/messages', connector.listen());
 
 // Waterfall
 bot.dialog('/', [
-    function (session) {
+    (session) => {
         session.send("Hi there, I'm still a young coconut. When I grow up, I aspire be able to hold my own in serious conversations.");
-        setTimeout ( function() {
-            builder.Prompts.text(session, "May I know your name?");
-        }, 1000);
+        setTimeout ( () => builder.Prompts.text(session, "May I know your name?"), 1000);
 
     },
-    function (session, results) {
+    (session, results) => {
         session.userData.name = results.response;
         builder.Prompts.number(session, "Hi " + results.response + ". How old are you?");
     },
-    function (session, results) {
+    (session, results) => {
         session.userData.age = results.response;
         builder.Prompts.choice(session, "What is your favourite snack?", ["Koko Krunch", "Julie's Peanut Butter Sandwich", "Pepero"]);
     },
-    function (session, results) {
+    (session, results) => {
         session.userData.snack = results.response.entity;
         session.send("Got it... " + session.userData.name +
                      " you are " + session.userData.age +
