@@ -6,8 +6,8 @@
   "scripts": {
     "dev": "nodemon ./dist/app.js",
     "test": "./node_modules/.bin/mocha --compilers js:babel-register",
-    "cover": "./node_modules/.bin/istanbul cover ./node_modules/mocha/bin/_mocha --compilers js:babel-register",
-    "coveralls": "./node_modules/.bin/istanbul cover ./node_modules/mocha/bin/_mocha --compilers js:babel-register --report lcovonly -- -R spec && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
+    "cover": "./node_modules/.bin/istanbul cover ./node_modules/mocha/bin/_mocha ./test --compilers js:babel-register",
+    "coveralls": "./node_modules/.bin/istanbul cover ./node_modules/mocha/bin/_mocha ./test --compilers js:babel-register --report lcovonly -- -R spec && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
     "start": "node ./dist/app.js"
   },
   "author": "lyzs90",
