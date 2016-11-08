@@ -23,12 +23,6 @@ server.post('/api/messages', connector.listen());
 // Bot Dialogs
 //=============================================================================
 
-// Fake Function
-exports.testStub = function() {
-  var message = "Success!"
-  return message;
-}
-
 // Waterfall
 bot.dialog('/', [
     function (session) {
@@ -40,7 +34,7 @@ bot.dialog('/', [
     },
     function (session, results) {
         session.userData.name = results.response;
-        builder.Prompts.number(session, "Hi " + results.response + ", How old are you?");
+        builder.Prompts.number(session, "Hi " + results.response + ". How old are you?");
     },
     function (session, results) {
         session.userData.age = results.response;
