@@ -8,8 +8,7 @@ A Node.js Chatbot built using the Microsoft Bot Framework. Coconut is a voraciou
 
 - Clone this repo
 - Install with [npm](https://www.npmjs.com): `npm install`
-- Transpile to ES5 with [gulp-babel](https://www.npmjs.com/package/gulp-babel): `gulp`
-- Run app with [nodemon](http://nodemon.io/): `npm run dev`
+- Transpile to ES5 and run nodemon dev server: `gulp dev`
 - Run tests: `npm test`
 - Interact with your bot using the [Bot Framework Emulator](https://download.botframework.com/bf-v3/tools/emulator/publish.htm)
 

@@ -1,10 +1,9 @@
 {
   "name": "Coconut",
   "version": "1.0.0",
-  "description": "Forever young",
+  "description": "A Young Coconut",
   "main": "./dist/app.js",
   "scripts": {
-    "dev": "nodemon ./dist/app.js",
     "test": "./node_modules/.bin/mocha --compilers js:babel-register",
     "cover": "./node_modules/.bin/istanbul cover ./node_modules/mocha/bin/_mocha ./test --compilers js:babel-register",
     "coveralls": "./node_modules/.bin/istanbul cover ./node_modules/mocha/bin/_mocha ./test --compilers js:babel-register --report lcovonly -- -R spec && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
@@ -21,6 +20,8 @@
     "babel-register": "^6.18.0",
     "coveralls": "^2.11.14",
     "gulp-babel": "^6.1.2",
+    "gulp-nodemon": "^2.2.1",
+    "gulp-watch": "^4.3.10",
     "istanbul": "^0.4.4",
     "mocha": "^3.1.2",
     "mocha-lcov-reporter": "^1.2.0",

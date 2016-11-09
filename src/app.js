@@ -19,16 +19,29 @@ var connector = new builder.ChatConnector({
 var bot = new builder.UniversalBot(connector);
 server.post('/api/messages', connector.listen());
 
+// Create LUIS recognizer that points at our model and add it as the root '/' dialog for our Cortana Bot.
+var model = 'https://api.projectoxford.ai/luis/v1/application?id=6c38cfec-6c40-4e48-9b7b-8218cbf7f285&subscription-key=6515729ea96541bf85e9a4a0a26e5030';
+var recognizer = new builder.LuisRecognizer(model);
+var intents = new builder.IntentDialog({ recognizers: [recognizer] });
+
 //=============================================================================
 // Bot Dialogs
 //=============================================================================
 
-// Waterfall
 bot.dialog('/', [
+    (session, args, next) => {
+        if(!session.userData.name && !session.userData.age && !session.userData.snack) {
+            session.beginDialog('/profile');
+        } else {
+            session.beginDialog('/food');
+        }
+    }
+]);
+
+bot.dialog('/profile', [
     (session) => {
         session.send("Hi there, I'm still a young coconut. When I grow up, I aspire be able to hold my own in serious conversations.");
-        setTimeout ( () => builder.Prompts.text(session, "May I know your name?"), 1000);
-
+        setTimeout ( () => builder.Prompts.text(session, "May I know your name?"), 2000);
     },
     (session, results) => {
         session.userData.name = results.response;
@@ -43,5 +56,18 @@ bot.dialog('/', [
         session.send("Got it... " + session.userData.name +
                      " you are " + session.userData.age +
                      " years old and you like " + session.userData.snack + ".");
+        setTimeout ( () => session.send("What would you like to eat today " + session.userData.name + " ?"), 2000);
+        session.beginDialog('/food');
     }
 ]);
+
+bot.dialog('/food', intents);
+intents
+    .matches('FindNearby', [
+        (session, args) => {
+            var task = builder.EntityRecognizer.findEntity(args.entities, 'Food');
+            session.send("Finding..." + task.entity);
+            session.endDialog();
+        }
+    ])
+    .onDefault(builder.DialogAction.send("I'm sorry. I didn't understand."));
