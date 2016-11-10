@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/lyzs90/Coconut.svg?branch=master)](https://travis-ci.org/lyzs90/Coconut) [![Coverage Status](https://coveralls.io/repos/github/lyzs90/Coconut/badge.svg?branch=master)](https://coveralls.io/github/lyzs90/Coconut?branch=master)
 
-A Node.js Chatbot built using the Microsoft Bot Framework. Coconut is a voracious learner and aspires to hold his own in serious conversations when he gets older.
+Coconut is a friendly Node.js Chatbot built using the Microsoft Bot Framework. Natural Language Processing is handled by [LUIS](https://www.luis.ai/). If you're starving and would like nearby food recommendations, look no further. Coconut will be available on Facebook Messenger, [@coconutbot]().
 
 ## Quick Start
 
@@ -14,9 +14,8 @@ A Node.js Chatbot built using the Microsoft Bot Framework. Coconut is a voraciou
 
 ## Upcoming Features
 
-- Handle invalid responses
+- Nearby Food Geolocation API
 - Integrate with Facebook Messenger
-- Filler replies
 
 ## License
 

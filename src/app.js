@@ -29,34 +29,8 @@ var intents = new builder.IntentDialog({ recognizers: [recognizer] });
 //=============================================================================
 
 bot.dialog('/', [
-    (session, args, next) => {
-        if(!session.userData.name && !session.userData.age && !session.userData.snack) {
-            session.beginDialog('/profile');
-        } else {
-            session.beginDialog('/food');
-        }
-    }
-]);
-
-bot.dialog('/profile', [
     (session) => {
-        session.send("Hi there, I'm still a young coconut. When I grow up, I aspire be able to hold my own in serious conversations.");
-        setTimeout ( () => builder.Prompts.text(session, "May I know your name?"), 2000);
-    },
-    (session, results) => {
-        session.userData.name = results.response;
-        builder.Prompts.number(session, "Hi " + results.response + ". How old are you?");
-    },
-    (session, results) => {
-        session.userData.age = results.response;
-        builder.Prompts.choice(session, "What is your favourite snack?", ["Koko Krunch", "Julie's Peanut Butter Sandwich", "Pepero"]);
-    },
-    (session, results) => {
-        session.userData.snack = results.response.entity;
-        session.send("Got it... " + session.userData.name +
-                     " you are " + session.userData.age +
-                     " years old and you like " + session.userData.snack + ".");
-        setTimeout ( () => session.send("What would you like to eat today " + session.userData.name + " ?"), 2000);
+        session.send("Hi there, I'm Coconut. Let me know what food you're craving and I'll point you in the right direction.");
         session.beginDialog('/food');
     }
 ]);
@@ -66,8 +40,8 @@ intents
     .matches('FindNearby', [
         (session, args) => {
             var task = builder.EntityRecognizer.findEntity(args.entities, 'Food');
-            session.send("Finding..." + task.entity);
-            session.endDialog();
+            session.send("Finding... " + task.entity);
+            setTimeout ( () => session.send("Is there something else you would like to eat?"), 2000);
         }
     ])
-    .onDefault(builder.DialogAction.send("I'm sorry. I didn't understand."));
+    .onDefault(builder.DialogAction.send("I'm sorry, I didn't quite get that. What's that you were craving for again?"));

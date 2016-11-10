@@ -1,7 +1,7 @@
 {
   "name": "Coconut",
   "version": "1.0.0",
-  "description": "A Young Coconut",
+  "description": "Coconut is a Node.js Chatbot built using the Microsoft Bot Framework",
   "main": "./dist/app.js",
   "scripts": {
     "test": "./node_modules/.bin/mocha --compilers js:babel-register",
