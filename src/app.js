@@ -1,5 +1,21 @@
 var restify = require('restify');
 var builder = require('botbuilder');
+var firebase = require('firebase');
+var https = require('https');
+
+//=============================================================================
+// Database Setup
+//=============================================================================
+
+// Initialize Firebase
+var config = {
+  apiKey: process.env.FIREBASE_API_KEY,
+  authDomain: process.env.FIREBASE_PID + ".firebaseapp.com",
+  databaseURL: "https://" + process.env.FIREBASE_PID + ".firebaseio.com",
+  storageBucket: "gs://" + process.env.FIREBASE_PID + ".appspot.com",
+};
+firebase.initializeApp(config);
+var database = firebase.database();
 
 //=============================================================================
 // Bot Setup
@@ -20,7 +36,7 @@ var bot = new builder.UniversalBot(connector);
 server.post('/api/messages', connector.listen());
 
 // Create LUIS recognizer that points at our model and add it as the root '/' dialog for our Cortana Bot.
-var model = 'https://api.projectoxford.ai/luis/v1/application?id=6c38cfec-6c40-4e48-9b7b-8218cbf7f285&subscription-key=6515729ea96541bf85e9a4a0a26e5030';
+var model = 'https://api.projectoxford.ai/luis/v1/application?id=' + process.env.LUIS_ID + '&subscription-key=' + process.env.LUIS_SUB_KEY;
 var recognizer = new builder.LuisRecognizer(model);
 var intents = new builder.IntentDialog({ recognizers: [recognizer] });
 
@@ -30,7 +46,7 @@ var intents = new builder.IntentDialog({ recognizers: [recognizer] });
 
 bot.dialog('/', [
     (session) => {
-        session.send("Hi there, I'm Coconut. Let me know what food you're craving and I'll point you in the right direction.");
+        session.send("Hi there, I'm Coconut. Let me know what food you're craving and I'll point you in the right direction. If you would like me to recommend something nearby, just shout out your location :)");
         session.beginDialog('/food');
     }
 ]);
@@ -41,6 +57,20 @@ intents
         (session, args) => {
             var task = builder.EntityRecognizer.findEntity(args.entities, 'Food');
             session.send("Finding... " + task.entity);
+
+            // Stub Firebase Request.
+            //TODO: use Firebase retrieval instead of https.get
+            //      options: craving + location, just location
+            var req = https.get('https://coconut-c63fc.firebaseio.com/searches/0/result/extractorData/data/0/group/0/Name/0/text.json', (res) => {
+              console.log(res.statusCode);
+              res.on('data', (chunk) => session.send(JSON.parse(chunk)) );
+            });
+
+            req.on('error', (e) => {
+              console.error(e);
+            });
+            //
+
             setTimeout ( () => session.send("Is there something else you would like to eat?"), 2000);
         }
     ])

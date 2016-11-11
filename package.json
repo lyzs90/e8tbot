@@ -13,6 +13,7 @@
   "license": "MIT",
   "dependencies": {
     "botbuilder": "^3.4.2",
+    "firebase": "^3.6.0",
     "restify": "^4.2.0"
   },
   "devDependencies": {

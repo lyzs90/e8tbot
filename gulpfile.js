@@ -20,9 +20,15 @@ gulp.task('dev', () => {
   gulp.start('default');
   nodemon({
     script: './dist/app.js',
-    env: { 'NODE_ENV': 'development' },
+    env: {
+        'NODE_ENV': 'development',
+        'FIREBASE_API_KEY': ' AIzaSyC0VEIeD1J7GWDR2v48alLdp68stsehHPw',
+        'FIREBASE_PID': 'coconut-c63fc',
+        'LUIS_ID': '6c38cfec-6c40-4e48-9b7b-8218cbf7f285',
+        'LUIS_SUB_KEY': '6515729ea96541bf85e9a4a0a26e5030'
+    },
     ignore: ['./dist/'] // ignore not necessary
   })
   //have nodemon run watch on start
-  .on('start', ['watch']);
+  .on('restart', ['watch']);
 });
