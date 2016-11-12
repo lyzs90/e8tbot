@@ -53,6 +53,19 @@ bot.dialog('/', [
 
 bot.dialog('/food', intents);
 intents
+    .matches('SayBye', [
+        (session, args) => {
+            setTimeout ( () => session.send("Alright, let me know if you need anything else."), 2000);
+            session.endDialog();
+        }
+    ])
+    .matches('SomethingElse', [
+        (session, args) => {
+            var task = builder.EntityRecognizer.findEntity(args.entities, 'Food');
+            setTimeout ( () => session.send("Ah, something other than " + task.entity + "?"), 2000);
+            session.beginDialog('/food');
+        }
+    ])
     .matches('FindNearby', [
         (session, args) => {
             var task = builder.EntityRecognizer.findEntity(args.entities, 'Food');
@@ -72,6 +85,7 @@ intents
             //
 
             setTimeout ( () => session.send("Is there something else you would like to eat?"), 2000);
+            session.beginDialog('/food');
         }
     ])
     .onDefault(builder.DialogAction.send("I'm sorry, I didn't quite get that. What's that you were craving for again?"));
