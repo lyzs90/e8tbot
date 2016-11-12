@@ -59,7 +59,7 @@ intents.matches('FindNearby', [function (session, args) {
     // Stub Firebase Request.
     //TODO: use Firebase retrieval instead of https.get
     //      options: craving + location, just location
-    var req = https.get('https://coconut-c63fc.firebaseio.com/searches/0/result/extractorData/data/0/group/0/Name/0/text.json', function (res) {
+    var req = https.get(config.databaseURL + '/searches/0/result/extractorData/data/0/group/0/Name/0/text.json', function (res) {
         console.log(res.statusCode);
         res.on('data', function (chunk) {
             return session.send(JSON.parse(chunk));

@@ -22,10 +22,10 @@ gulp.task('dev', () => {
     script: './dist/app.js',
     env: {
         'NODE_ENV': 'development',
-        'FIREBASE_API_KEY': ' AIzaSyC0VEIeD1J7GWDR2v48alLdp68stsehHPw',
-        'FIREBASE_PID': 'coconut-c63fc',
-        'LUIS_ID': '6c38cfec-6c40-4e48-9b7b-8218cbf7f285',
-        'LUIS_SUB_KEY': '6515729ea96541bf85e9a4a0a26e5030'
+        'FIREBASE_API_KEY': YOUR FIREBASE API KEY,
+        'FIREBASE_PID': YOUR FIREBASE PID,
+        'LUIS_ID': YOUR LUIS ID,
+        'LUIS_SUB_KEY': YOUR LUIS SUB KEY
     },
     ignore: ['./dist/'] // ignore not necessary
   })
