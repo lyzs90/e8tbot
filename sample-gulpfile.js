@@ -22,10 +22,10 @@ gulp.task('dev', () => {
     script: './dist/app.js',
     env: {
         'NODE_ENV': 'development',
-        'FIREBASE_API_KEY': YOUR FIREBASE API KEY,
-        'FIREBASE_PID': YOUR FIREBASE PID,
-        'LUIS_ID': YOUR LUIS ID,
-        'LUIS_SUB_KEY': YOUR LUIS SUB KEY
+        'FIREBASE_API_KEY': '<Your Firebase Api Key>',
+        'FIREBASE_PID': '<Your Firebase Project ID>',
+        'LUIS_ID': '<Your Luis ID>',
+        'LUIS_SUB_KEY': '<Your LUIS Subscription Key>'
     },
     ignore: ['./dist/'] // ignore not necessary
   })
