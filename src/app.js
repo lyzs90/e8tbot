@@ -52,7 +52,7 @@ bot.dialog('/', [
             .title("Hi, I am Coconut")
             .text("Your friendly neighbourhood food hunting bot")
             .images([
-                 builder.CardImage.create(session, "https://s12.postimg.org/4daw26kr1/logo_cropped.png")
+                 builder.CardImage.create(session, "https://s21.postimg.org/i8h4uu0if/logo_cropped.png")
             ]);
         var msg = new builder.Message(session).attachments([card]);
         session.send(msg);
