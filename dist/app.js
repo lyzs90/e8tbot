@@ -46,24 +46,38 @@ var intents = new builder.IntentDialog({ recognizers: [recognizer] });
 // Bot Dialogs
 //=============================================================================
 
+// Root Dialog
 bot.dialog('/', [function (session) {
-    session.send("Hi there, I'm Coconut. Let me know what food you're craving and I'll point you in the right direction. If you would like me to recommend something nearby, just shout out your location :)");
+    // Send a card
+    var card = new builder.HeroCard(session).title("Coconut").text("Your friendly neighbourhood food hunting bot").images([builder.CardImage.create(session, "https://s13.postimg.org/hc4wcsjo7/logo.png")]);
+    var msg = new builder.Message(session).attachments([card]);
+    session.send(msg);
+    session.send("Let me know what food you're craving and I'll point you in the right direction. If you would like me to recommend something nearby, just shout out your location :)");
     session.beginDialog('/food');
 }]);
 
+// Intents Dialog
 bot.dialog('/food', intents);
+
+// Respond to answers like 'no', 'bye', 'goodbye', 'thank you'
 intents.matches('SayBye', [function (session, args) {
     setTimeout(function () {
         return session.send("Alright, let me know if you need anything else.");
     }, 2000);
     session.endDialog();
-}]).matches('SomethingElse', [function (session, args) {
+}]);
+
+// Respond to answers like 'i hate <food>', 'don't want to eat <food>'
+intents.matches('SomethingElse', [function (session, args) {
     var task = builder.EntityRecognizer.findEntity(args.entities, 'Food');
     setTimeout(function () {
         return session.send("Ah, something other than " + task.entity + "?");
     }, 2000);
     session.beginDialog('/food');
-}]).matches('FindNearby', [function (session, args) {
+}]);
+
+// Respond to answers like 'i want to eat <food>', '<food>' TODO: allow location
+intents.matches('FindNearby', [function (session, args) {
     var task = builder.EntityRecognizer.findEntity(args.entities, 'Food');
     session.send("Finding... " + task.entity);
 
@@ -86,4 +100,6 @@ intents.matches('SayBye', [function (session, args) {
         return session.send("Is there something else you would like to eat?");
     }, 2000);
     session.beginDialog('/food');
-}]).onDefault(builder.DialogAction.send("I'm sorry, I didn't quite get that. What's that you were craving for again?"));
+}]);
+
+intents.onDefault(builder.DialogAction.send("I'm sorry, I didn't quite get that. Please state a craving or your location."));
