@@ -49,7 +49,7 @@ var intents = new builder.IntentDialog({ recognizers: [recognizer] });
 // Root Dialog
 bot.dialog('/', [function (session) {
     // Send a card
-    var card = new builder.HeroCard(session).title("Coconut").text("Your friendly neighbourhood food hunting bot").images([builder.CardImage.create(session, "https://s13.postimg.org/hc4wcsjo7/logo.png")]);
+    var card = new builder.HeroCard(session).title("Hi, I am Coconut").text("Your friendly neighbourhood food hunting bot").images([builder.CardImage.create(session, "https://s12.postimg.org/4daw26kr1/logo_cropped.png")]);
     var msg = new builder.Message(session).attachments([card]);
     session.send(msg);
     session.send("Let me know what food you're craving and I'll point you in the right direction. If you would like me to recommend something nearby, just shout out your location :)");

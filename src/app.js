@@ -49,10 +49,10 @@ bot.dialog('/', [
     (session) => {
         // Send a card
         var card = new builder.HeroCard(session)
-            .title("Coconut")
+            .title("Hi, I am Coconut")
             .text("Your friendly neighbourhood food hunting bot")
             .images([
-                 builder.CardImage.create(session, "https://s13.postimg.org/hc4wcsjo7/logo.png")
+                 builder.CardImage.create(session, "https://s12.postimg.org/4daw26kr1/logo_cropped.png")
             ]);
         var msg = new builder.Message(session).attachments([card]);
         session.send(msg);
