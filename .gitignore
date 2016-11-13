@@ -1,4 +1,7 @@
-node_modules
-coverage
-scraper
+/node_modules
+/coverage
+/scraper
+/js
 gulpfile.js
+test-firebase.js
+test-mongodb.js

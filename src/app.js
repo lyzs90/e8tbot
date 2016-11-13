@@ -1,21 +1,15 @@
 var restify = require('restify');
 var builder = require('botbuilder');
-var firebase = require('firebase');
-var https = require('https');
+var mongodb = require('mongodb');
+var assert = require('assert');
+var findDocuments = require('./lib/findDocuments');
 
 //=============================================================================
 // Database Setup
 //=============================================================================
 
-// Initialize Firebase
-var config = {
-  apiKey: process.env.FIREBASE_API_KEY,
-  authDomain: process.env.FIREBASE_PID + ".firebaseapp.com",
-  databaseURL: "https://" + process.env.FIREBASE_PID + ".firebaseio.com",
-  storageBucket: "gs://" + process.env.FIREBASE_PID + ".appspot.com",
-};
-firebase.initializeApp(config);
-var database = firebase.database();
+// Connect to MongoDB
+var uri = process.env.MONGODB_URI;
 
 //=============================================================================
 // Bot Setup
@@ -56,7 +50,7 @@ bot.dialog('/', [
             ]);
         var msg = new builder.Message(session).attachments([card]);
         session.send(msg);
-        session.send("Let me know what food you're craving and I'll point you in the right direction. If you would like me to recommend something nearby, just shout out your location :)");
+        session.send("Let me know what food you're craving and I'll point you in the right direction. If you would like me to recommend something nearby, just shout out your location :)"); // TODO: make this a query
         session.beginDialog('/food');
     }
 ]);
@@ -81,24 +75,22 @@ intents.matches('SomethingElse', [
     }
 ]);
 
-// Respond to answers like 'i want to eat <food>', '<food>' TODO: allow location
+// Respond to answers like 'i want to eat <food>', '<food>', '<location>'
 intents.matches('FindNearby', [
     (session, args) => {
         var task = builder.EntityRecognizer.findEntity(args.entities, 'Food');
         session.send("Finding... " + task.entity);
 
-        // Stub Firebase Request.
-        //TODO: use Firebase retrieval instead of https.get
-        //      options: craving + location, just location
-        var req = https.get(config.databaseURL + '/searches/0/result/extractorData/data/0/group/0/Name/0/text.json', (res) => {
-          console.log(res.statusCode);
-          res.on('data', (chunk) => session.send(JSON.parse(chunk)) );
+        // Execute MongoDB Query TODO: link to response
+        mongodb.MongoClient.connect(uri, function(err, db) {
+            assert.equal(null, err);
+            console.log("Connected successfully to server");
+            findDocuments(db, process.env.MONGODB_COLLECTION, function(docs) {
+                session.send(docs[0].results[0].Name[0].text);
+                db.close();
+            });
         });
-
-        req.on('error', (e) => {
-          console.error(e);
-        });
-        //
+        //======================
 
         setTimeout ( () => session.send("Is there something else you would like to eat?"), 2000);
         session.beginDialog('/food');

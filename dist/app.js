@@ -2,22 +2,16 @@
 
 var restify = require('restify');
 var builder = require('botbuilder');
-var firebase = require('firebase');
-var https = require('https');
+var mongodb = require('mongodb');
+var assert = require('assert');
+var findDocuments = require('./lib/findDocuments');
 
 //=============================================================================
 // Database Setup
 //=============================================================================
 
-// Initialize Firebase
-var config = {
-    apiKey: process.env.FIREBASE_API_KEY,
-    authDomain: process.env.FIREBASE_PID + ".firebaseapp.com",
-    databaseURL: "https://" + process.env.FIREBASE_PID + ".firebaseio.com",
-    storageBucket: "gs://" + process.env.FIREBASE_PID + ".appspot.com"
-};
-firebase.initializeApp(config);
-var database = firebase.database();
+// Connect to MongoDB
+var uri = process.env.MONGODB_URI;
 
 //=============================================================================
 // Bot Setup
@@ -81,20 +75,16 @@ intents.matches('FindNearby', [function (session, args) {
     var task = builder.EntityRecognizer.findEntity(args.entities, 'Food');
     session.send("Finding... " + task.entity);
 
-    // Stub Firebase Request.
-    //TODO: use Firebase retrieval instead of https.get
-    //      options: craving + location, just location
-    var req = https.get(config.databaseURL + '/searches/0/result/extractorData/data/0/group/0/Name/0/text.json', function (res) {
-        console.log(res.statusCode);
-        res.on('data', function (chunk) {
-            return session.send(JSON.parse(chunk));
+    // Execute MongoDB Query
+    mongodb.MongoClient.connect(uri, function (err, db) {
+        assert.equal(null, err);
+        console.log("Connected successfully to server");
+        findDocuments(db, process.env.MONGODB_COLLECTION, function (docs) {
+            session.send(docs[0].results[0].Name[0].text);
+            db.close();
         });
     });
-
-    req.on('error', function (e) {
-        console.error(e);
-    });
-    //
+    //======================
 
     setTimeout(function () {
         return session.send("Is there something else you would like to eat?");

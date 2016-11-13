@@ -25,7 +25,9 @@ gulp.task('dev', () => {
         'FIREBASE_API_KEY': '<Your Firebase Api Key>',
         'FIREBASE_PID': '<Your Firebase Project ID>',
         'LUIS_ID': '<Your Luis ID>',
-        'LUIS_SUB_KEY': '<Your LUIS Subscription Key>'
+        'LUIS_SUB_KEY': '<Your LUIS Subscription Key>',
+        'MONGODB_URI': '<Your MongoDB URI>',
+        'MONGODB_COLLECTION': '<Your MongoDB Collection>'
     },
     ignore: ['./dist/'] // ignore not necessary
   })
