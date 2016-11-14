@@ -3,5 +3,4 @@
 /scraper
 /js
 gulpfile.js
-test-firebase.js
 test-mongodb.js

@@ -40,7 +40,7 @@ var intents = new builder.IntentDialog({ recognizers: [recognizer] });
 // Bot Dialogs
 //=============================================================================
 
-// Root Dialog
+// Welcome Dialog
 bot.dialog('/', [function (session) {
     // Send a card
     var card = new builder.HeroCard(session).title("Hi, I am Coconut").text("Your friendly neighbourhood food hunting bot").images([builder.CardImage.create(session, "https://s21.postimg.org/i8h4uu0if/logo_cropped.png")]);
@@ -70,25 +70,45 @@ intents.matches('SomethingElse', [function (session, args) {
     session.beginDialog('/food');
 }]);
 
-// Respond to answers like 'i want to eat <food>', '<food>' TODO: allow location
+// Respond to answers like 'i want to eat <food>', '<food>', '<location>'
 intents.matches('FindNearby', [function (session, args) {
-    var task = builder.EntityRecognizer.findEntity(args.entities, 'Food');
+
+    // If Location
+    var task = builder.EntityRecognizer.findEntity(args.entities, 'Location');
     session.send("Finding... " + task.entity);
 
-    // Execute MongoDB Query
+    // Parameterized query TODO: add validation for queryString
+    var regex = new RegExp("^" + task.entity + "$", 'i');
+    var selector = { "search": regex };
+
+    // Execute query TODO: display card
     mongodb.MongoClient.connect(uri, function (err, db) {
         assert.equal(null, err);
         console.log("Connected successfully to server");
-        findDocuments(db, process.env.MONGODB_COLLECTION, function (docs) {
-            session.send(docs[0].results[0].Name[0].text);
+        findDocuments(db, process.env.MONGODB_COLLECTION, selector, function (docs) {
+            /*
+            var str = '';
+            var i = 1;
+            docs[0].results.forEach( (result, i) => {
+                i += 1;
+                // Template literals
+                str += `${i}. ${result.Name[0].text} \n\n`;
+            });
+            session.send(str);
+            */
+
+            // Display results in a carousel
+            // Ask the user to select an item from a carousel.
+            var msg = new builder.Message(session).attachmentLayout(builder.AttachmentLayout.carousel).attachments([new builder.HeroCard(session).title(docs[0].results[0].Name[0].text).subtitle(docs[0].results[0].Category[0].text + ', ' + docs[0].results[0].Rating[0].text).text(docs[0].results[0].Address[0].text).images([builder.CardImage.create(session, docs[0].results[0].Image[0].src).tap(builder.CardAction.showImage(session, docs[0].results[0].Image[0].src))]).buttons([builder.CardAction.openUrl(session, docs[0].results[0].Image[0].href, "Reviews"), builder.CardAction.imBack(session, "select:100", "Like")]), new builder.HeroCard(session).title(docs[0].results[1].Name[0].text).subtitle(docs[0].results[1].Category[0].text + ', ' + docs[0].results[1].Rating[0].text).text(docs[0].results[1].Address[0].text).images([builder.CardImage.create(session, docs[0].results[1].Image[0].src).tap(builder.CardAction.showImage(session, docs[0].results[1].Image[0].src))]).buttons([builder.CardAction.openUrl(session, docs[0].results[1].Image[0].href, "Reviews"), builder.CardAction.imBack(session, "select:101", "Like")]), new builder.HeroCard(session).title(docs[0].results[2].Name[0].text).subtitle(docs[0].results[2].Category[0].text + ', ' + docs[0].results[2].Rating[0].text).text(docs[0].results[2].Address[0].text).images([builder.CardImage.create(session, docs[0].results[2].Image[0].src).tap(builder.CardAction.showImage(session, docs[0].results[2].Image[0].src))]).buttons([builder.CardAction.openUrl(session, docs[0].results[2].Image[0].href, "Reviews"), builder.CardAction.imBack(session, "select:102", "Like")])]);
+            // Show carousel
+            builder.Prompts.choice(session, msg, "select:100|select:101|select:102");
             db.close();
         });
     });
-    //======================
 
     setTimeout(function () {
         return session.send("Is there something else you would like to eat?");
-    }, 2000);
+    }, 5000);
     session.beginDialog('/food');
 }]);
 
