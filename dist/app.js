@@ -46,7 +46,7 @@ bot.dialog('/', [function (session) {
     var card = new builder.HeroCard(session).title("Hi, I am Coconut").text("Your friendly neighbourhood food hunting bot").images([builder.CardImage.create(session, "https://s21.postimg.org/i8h4uu0if/logo_cropped.png")]);
     var msg = new builder.Message(session).attachments([card]);
     session.send(msg);
-    session.send("Let me know what food you're craving and I'll point you in the right direction. If you would like me to recommend something nearby, just shout out your location :)");
+    session.send("If you would like me to recommend something nearby, just shout out your location :)");
     session.beginDialog('/food');
 }]);
 
@@ -73,7 +73,7 @@ intents.matches('SomethingElse', [function (session, args) {
 // Respond to answers like 'i want to eat <food>', '<food>', '<location>'
 intents.matches('FindNearby', [function (session, args) {
 
-    // If Location
+    // If Location TODO: add support for food queries
     var task = builder.EntityRecognizer.findEntity(args.entities, 'Location');
     session.send("Finding... " + task.entity);
 
@@ -81,27 +81,22 @@ intents.matches('FindNearby', [function (session, args) {
     var regex = new RegExp("^" + task.entity + "$", 'i');
     var selector = { "search": regex };
 
-    // Execute query TODO: display card
+    // Execute MongoDB query
     mongodb.MongoClient.connect(uri, function (err, db) {
         assert.equal(null, err);
         console.log("Connected successfully to server");
         findDocuments(db, process.env.MONGODB_COLLECTION, selector, function (docs) {
-            /*
-            var str = '';
-            var i = 1;
-            docs[0].results.forEach( (result, i) => {
-                i += 1;
-                // Template literals
-                str += `${i}. ${result.Name[0].text} \n\n`;
-            });
-            session.send(str);
-            */
-
             // Display results in a carousel
-            // Ask the user to select an item from a carousel.
-            var msg = new builder.Message(session).attachmentLayout(builder.AttachmentLayout.carousel).attachments([new builder.HeroCard(session).title(docs[0].results[0].Name[0].text).subtitle(docs[0].results[0].Category[0].text + ', ' + docs[0].results[0].Rating[0].text).text(docs[0].results[0].Address[0].text).images([builder.CardImage.create(session, docs[0].results[0].Image[0].src).tap(builder.CardAction.showImage(session, docs[0].results[0].Image[0].src))]).buttons([builder.CardAction.openUrl(session, docs[0].results[0].Image[0].href, "Reviews"), builder.CardAction.imBack(session, "select:100", "Like")]), new builder.HeroCard(session).title(docs[0].results[1].Name[0].text).subtitle(docs[0].results[1].Category[0].text + ', ' + docs[0].results[1].Rating[0].text).text(docs[0].results[1].Address[0].text).images([builder.CardImage.create(session, docs[0].results[1].Image[0].src).tap(builder.CardAction.showImage(session, docs[0].results[1].Image[0].src))]).buttons([builder.CardAction.openUrl(session, docs[0].results[1].Image[0].href, "Reviews"), builder.CardAction.imBack(session, "select:101", "Like")]), new builder.HeroCard(session).title(docs[0].results[2].Name[0].text).subtitle(docs[0].results[2].Category[0].text + ', ' + docs[0].results[2].Rating[0].text).text(docs[0].results[2].Address[0].text).images([builder.CardImage.create(session, docs[0].results[2].Image[0].src).tap(builder.CardAction.showImage(session, docs[0].results[2].Image[0].src))]).buttons([builder.CardAction.openUrl(session, docs[0].results[2].Image[0].href, "Reviews"), builder.CardAction.imBack(session, "select:102", "Like")])]);
+            var tmpDeck = [];
+            docs[0].results.slice(0, 5).forEach(function (result) {
+                var tmpCard = [new builder.HeroCard(session).title(result.Name[0].text).subtitle(result.Category[0].text + ', ' + result.Rating[0].text).text('\n' + result.Address[0].text).images([builder.CardImage.create(session, result.Image[0].src).tap(builder.CardAction.showImage(session, result.Image[0].src))]).buttons([builder.CardAction.openUrl(session, result.Image[0].href, "Reviews")])];
+                tmpDeck.push.apply(tmpDeck, tmpCard);
+            });
+
+            var msg = new builder.Message(session).attachmentLayout(builder.AttachmentLayout.carousel).attachments(tmpDeck);
+
             // Show carousel
-            builder.Prompts.choice(session, msg, "select:100|select:101|select:102");
+            session.send(msg);
             db.close();
         });
     });
@@ -112,4 +107,4 @@ intents.matches('FindNearby', [function (session, args) {
     session.beginDialog('/food');
 }]);
 
-intents.onDefault(builder.DialogAction.send("I'm sorry, I didn't quite get that. Please state a craving or your location."));
+intents.onDefault(builder.DialogAction.send("I'm sorry, I didn't quite get that. Please state your location."));

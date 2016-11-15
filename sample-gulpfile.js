@@ -22,8 +22,6 @@ gulp.task('dev', () => {
     script: './dist/app.js',
     env: {
         'NODE_ENV': 'development',
-        'FIREBASE_API_KEY': '<Your Firebase Api Key>',
-        'FIREBASE_PID': '<Your Firebase Project ID>',
         'LUIS_ID': '<Your Luis ID>',
         'LUIS_SUB_KEY': '<Your LUIS Subscription Key>',
         'MONGODB_URI': '<Your MongoDB URI>',

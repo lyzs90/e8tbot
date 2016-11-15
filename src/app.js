@@ -50,7 +50,7 @@ bot.dialog('/', [
             ]);
         var msg = new builder.Message(session).attachments([card]);
         session.send(msg);
-        session.send("Let me know what food you're craving and I'll point you in the right direction. If you would like me to recommend something nearby, just shout out your location :)");
+        session.send("If you would like me to recommend something nearby, just shout out your location :)");
         session.beginDialog('/food');
     }
 ]);
@@ -79,7 +79,7 @@ intents.matches('SomethingElse', [
 intents.matches('FindNearby', [
     (session, args) => {
 
-        // If Location
+        // If Location TODO: add support for food queries
         var task = builder.EntityRecognizer.findEntity(args.entities, 'Location');
         session.send("Finding... " + task.entity);
 
@@ -87,66 +87,36 @@ intents.matches('FindNearby', [
         var regex = new RegExp("^" + task.entity + "$", 'i');
         var selector = { "search" : regex };
 
-        // Execute query
+        // Execute MongoDB query
         mongodb.MongoClient.connect(uri, (err, db) => {
             assert.equal(null, err);
             console.log("Connected successfully to server");
             findDocuments(db, process.env.MONGODB_COLLECTION, selector, (docs) => {
-                /*
-                var str = '';
-                var i = 1;
-                docs[0].results.forEach( (result, i) => {
-                    i += 1;
-                    // Template literals
-                    str += `${i}. ${result.Name[0].text} \n\n`;
-                });
-                session.send(str);
-                */
-
                 // Display results in a carousel
-                // Ask the user to select an item from a carousel.
+                var tmpDeck = [];
+                docs[0].results.slice(0,5).forEach( (result) => {
+                    var tmpCard = [
+                        new builder.HeroCard(session)
+                            .title(result.Name[0].text)
+                            .subtitle(`${result.Category[0].text}, ${result.Rating[0].text}`)
+                            .text(`\n${result.Address[0].text}`)
+                            .images([
+                                builder.CardImage.create(session, result.Image[0].src)
+                                    .tap(builder.CardAction.showImage(session, result.Image[0].src)),
+                            ])
+                            .buttons([
+                                builder.CardAction.openUrl(session, result.Image[0].href, "Reviews")
+                            ])
+                    ];
+                    tmpDeck.push(...tmpCard);
+                });
+
                 var msg = new builder.Message(session)
                     .attachmentLayout(builder.AttachmentLayout.carousel)
-                    .attachments([
-                        new builder.HeroCard(session)
-                            .title(docs[0].results[0].Name[0].text)
-                            .subtitle(`${docs[0].results[0].Category[0].text}, ${docs[0].results[0].Rating[0].text}`)
-                            .text(docs[0].results[0].Address[0].text)
-                            .images([
-                                builder.CardImage.create(session, docs[0].results[0].Image[0].src)
-                                    .tap(builder.CardAction.showImage(session, docs[0].results[0].Image[0].src)),
-                            ])
-                            .buttons([
-                                builder.CardAction.openUrl(session, docs[0].results[0].Image[0].href, "Reviews"),
-                                builder.CardAction.imBack(session, "select:100", "Like")
-                            ]),
-                        new builder.HeroCard(session)
-                            .title(docs[0].results[1].Name[0].text)
-                            .subtitle(`${docs[0].results[1].Category[0].text}, ${docs[0].results[1].Rating[0].text}`)
-                            .text(docs[0].results[1].Address[0].text)
-                            .images([
-                                builder.CardImage.create(session, docs[0].results[1].Image[0].src)
-                                    .tap(builder.CardAction.showImage(session, docs[0].results[1].Image[0].src)),
-                            ])
-                            .buttons([
-                                builder.CardAction.openUrl(session, docs[0].results[1].Image[0].href, "Reviews"),
-                                builder.CardAction.imBack(session, "select:101", "Like")
-                            ]),
-                        new builder.HeroCard(session)
-                            .title(docs[0].results[2].Name[0].text)
-                            .subtitle(`${docs[0].results[2].Category[0].text}, ${docs[0].results[2].Rating[0].text}`)
-                            .text(docs[0].results[2].Address[0].text)
-                            .images([
-                                builder.CardImage.create(session, docs[0].results[2].Image[0].src)
-                                    .tap(builder.CardAction.showImage(session, docs[0].results[2].Image[0].src)),
-                            ])
-                            .buttons([
-                                builder.CardAction.openUrl(session, docs[0].results[2].Image[0].href, "Reviews"),
-                                builder.CardAction.imBack(session, "select:102", "Like")
-                            ])
-                    ]);
+                    .attachments(tmpDeck);
+
                 // Show carousel
-                builder.Prompts.choice(session, msg, "select:100|select:101|select:102");
+                session.send(msg);
                 db.close();
             });
         });
@@ -156,4 +126,4 @@ intents.matches('FindNearby', [
     }
 ]);
 
-intents.onDefault(builder.DialogAction.send("I'm sorry, I didn't quite get that. Please state a craving or your location."));
+intents.onDefault(builder.DialogAction.send("I'm sorry, I didn't quite get that. Please state your location."));
