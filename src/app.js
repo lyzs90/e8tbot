@@ -3,6 +3,7 @@ var builder = require('botbuilder');
 var mongodb = require('mongodb');
 var assert = require('assert');
 var findDocuments = require('./lib/findDocuments');
+var createDeck = require('./lib/createDeck');
 
 //=============================================================================
 // Database Setup
@@ -30,7 +31,8 @@ var bot = new builder.UniversalBot(connector);
 server.post('/api/messages', connector.listen());
 
 // Create LUIS recognizer that points at our model and add it as the root '/' dialog for our Cortana Bot.
-var model = 'https://api.projectoxford.ai/luis/v1/application?id=' + process.env.LUIS_ID + '&subscription-key=' + process.env.LUIS_SUB_KEY;
+var model = `https://api.projectoxford.ai/luis/v1/application?id=\
+${process.env.LUIS_ID}&subscription-key=${process.env.LUIS_SUB_KEY}`;
 var recognizer = new builder.LuisRecognizer(model);
 var intents = new builder.IntentDialog({ recognizers: [recognizer] });
 
@@ -41,7 +43,7 @@ var intents = new builder.IntentDialog({ recognizers: [recognizer] });
 // Welcome Dialog
 bot.dialog('/', [
     (session) => {
-        // Send a card
+        // Send a card TODO: handle hi or weird reponses
         var card = new builder.HeroCard(session)
             .title("Hi, I am Coconut")
             .text("Your friendly neighbourhood food hunting bot")
@@ -70,7 +72,7 @@ intents.matches('SayBye', [
 intents.matches('SomethingElse', [
     (session, args) => {
         var task = builder.EntityRecognizer.findEntity(args.entities, 'Food');
-        setTimeout ( () => session.send("Ah, something other than " + task.entity + "?"), 2000);
+        setTimeout ( () => session.send(`Ah, something other than ${task.entity}?`), 2000);
         session.beginDialog('/food');
     }
 ]);
@@ -81,10 +83,10 @@ intents.matches('FindNearby', [
 
         // If Location TODO: add support for food queries
         var task = builder.EntityRecognizer.findEntity(args.entities, 'Location');
-        session.send("Finding... " + task.entity);
+        session.send(`Searching for... ${task.entity}`);
 
         // Parameterized query TODO: add validation for queryString
-        var regex = new RegExp("^" + task.entity + "$", 'i');
+        var regex = new RegExp(`^${task.entity}$`, 'i');
         var selector = { "search" : regex };
 
         // Execute MongoDB query
@@ -92,38 +94,23 @@ intents.matches('FindNearby', [
             assert.equal(null, err);
             console.log("Connected successfully to server");
             findDocuments(db, process.env.MONGODB_COLLECTION, selector, (docs) => {
-                // Display results in a carousel
+                // Create deck of cards
                 var tmpDeck = [];
-                docs[0].results.slice(0,5).forEach( (result) => {
-                    var tmpCard = [
-                        new builder.HeroCard(session)
-                            .title(result.Name[0].text)
-                            .subtitle(`${result.Category[0].text}, ${result.Rating[0].text}`)
-                            .text(`\n${result.Address[0].text}`)
-                            .images([
-                                builder.CardImage.create(session, result.Image[0].src)
-                                    .tap(builder.CardAction.showImage(session, result.Image[0].src)),
-                            ])
-                            .buttons([
-                                builder.CardAction.openUrl(session, result.Image[0].href, "Reviews")
-                            ])
-                    ];
-                    tmpDeck.push(...tmpCard);
-                });
-
+                createDeck(session, tmpDeck, docs);
                 var msg = new builder.Message(session)
                     .attachmentLayout(builder.AttachmentLayout.carousel)
                     .attachments(tmpDeck);
 
-                // Show carousel
+                // Show deck as a carousel
                 session.send(msg);
                 db.close();
             });
         });
 
-        setTimeout ( () => session.send("Is there something else you would like to eat?"), 5000);
-        session.beginDialog('/food');
+        setTimeout ( () => session.send("What else would you like to search for?"), 5000);
+            session.beginDialog('/food');
     }
+
 ]);
 
 intents.onDefault(builder.DialogAction.send("I'm sorry, I didn't quite get that. Please state your location."));

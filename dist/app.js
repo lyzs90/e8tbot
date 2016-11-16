@@ -5,6 +5,7 @@ var builder = require('botbuilder');
 var mongodb = require('mongodb');
 var assert = require('assert');
 var findDocuments = require('./lib/findDocuments');
+var createDeck = require('./lib/createDeck');
 
 //=============================================================================
 // Database Setup
@@ -42,7 +43,7 @@ var intents = new builder.IntentDialog({ recognizers: [recognizer] });
 
 // Welcome Dialog
 bot.dialog('/', [function (session) {
-    // Send a card
+    // Send a card TODO: handle hi or weird reponses
     var card = new builder.HeroCard(session).title("Hi, I am Coconut").text("Your friendly neighbourhood food hunting bot").images([builder.CardImage.create(session, "https://s21.postimg.org/i8h4uu0if/logo_cropped.png")]);
     var msg = new builder.Message(session).attachments([card]);
     session.send(msg);
@@ -65,7 +66,7 @@ intents.matches('SayBye', [function (session, args) {
 intents.matches('SomethingElse', [function (session, args) {
     var task = builder.EntityRecognizer.findEntity(args.entities, 'Food');
     setTimeout(function () {
-        return session.send("Ah, something other than " + task.entity + "?");
+        return session.send('Ah, something other than ' + task.entity + '?');
     }, 2000);
     session.beginDialog('/food');
 }]);
@@ -75,10 +76,10 @@ intents.matches('FindNearby', [function (session, args) {
 
     // If Location TODO: add support for food queries
     var task = builder.EntityRecognizer.findEntity(args.entities, 'Location');
-    session.send("Finding... " + task.entity);
+    session.send('Searching for... ' + task.entity);
 
     // Parameterized query TODO: add validation for queryString
-    var regex = new RegExp("^" + task.entity + "$", 'i');
+    var regex = new RegExp('^' + task.entity + '$', 'i');
     var selector = { "search": regex };
 
     // Execute MongoDB query
@@ -86,23 +87,19 @@ intents.matches('FindNearby', [function (session, args) {
         assert.equal(null, err);
         console.log("Connected successfully to server");
         findDocuments(db, process.env.MONGODB_COLLECTION, selector, function (docs) {
-            // Display results in a carousel
+            // Create deck of cards
             var tmpDeck = [];
-            docs[0].results.slice(0, 5).forEach(function (result) {
-                var tmpCard = [new builder.HeroCard(session).title(result.Name[0].text).subtitle(result.Category[0].text + ', ' + result.Rating[0].text).text('\n' + result.Address[0].text).images([builder.CardImage.create(session, result.Image[0].src).tap(builder.CardAction.showImage(session, result.Image[0].src))]).buttons([builder.CardAction.openUrl(session, result.Image[0].href, "Reviews")])];
-                tmpDeck.push.apply(tmpDeck, tmpCard);
-            });
-
+            createDeck(session, tmpDeck, docs);
             var msg = new builder.Message(session).attachmentLayout(builder.AttachmentLayout.carousel).attachments(tmpDeck);
 
-            // Show carousel
+            // Show deck as a carousel
             session.send(msg);
             db.close();
         });
     });
 
     setTimeout(function () {
-        return session.send("Is there something else you would like to eat?");
+        return session.send("What else would you like to search for?");
     }, 5000);
     session.beginDialog('/food');
 }]);
