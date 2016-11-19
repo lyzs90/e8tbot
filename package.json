@@ -12,10 +12,8 @@
   "author": "lyzs90",
   "license": "MIT",
   "dependencies": {
-    "botbuilder": "^3.4.2",
-    "firebase": "^3.6.0",
+    "botbuilder": "^3.4.4",
     "mongodb": "^2.2.11",
-    "request": "^2.78.0",
     "restify": "^4.2.0"
   },
   "devDependencies": {
@@ -24,7 +22,6 @@
     "coveralls": "^2.11.14",
     "gulp-babel": "^6.1.2",
     "gulp-nodemon": "^2.2.1",
-    "gulp-watch": "^4.3.10",
     "istanbul": "^0.4.4",
     "mocha": "^3.1.2",
     "mocha-lcov-reporter": "^1.2.0",

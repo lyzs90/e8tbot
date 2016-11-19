@@ -1,23 +1,18 @@
 const gulp = require('gulp');
 const babel = require('gulp-babel');
-const watch = require('gulp-watch');
 const nodemon = require('gulp-nodemon');
 
-gulp.task('default', () => {
-    return gulp.src('src/app.js')
+// Task to transpile to ES6
+gulp.task('build', () => {
+    return gulp.src(['src/app.js', 'src/lib/*.js'], { base : './src/' })
         .pipe(babel({
             presets: ['es2015']
         }))
         .pipe(gulp.dest('dist'));
 });
 
-gulp.task('watch', () => {
-  gulp.watch('src/app.js', ['default']);
-  // Other watchers
-})
-
+// Task to start nodemon and handle restarts
 gulp.task('dev', () => {
-  gulp.start('default');
   nodemon({
     script: './dist/app.js',
     env: {
@@ -29,6 +24,8 @@ gulp.task('dev', () => {
     },
     ignore: ['./dist/'] // ignore not necessary
   })
-  //have nodemon run watch on start
-  .on('restart', ['watch']);
+    .on('restart', ['build']);
 });
+
+// Default Task
+gulp.task('default', ['build', 'dev']);
