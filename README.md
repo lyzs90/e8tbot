@@ -35,9 +35,10 @@ Coconut is available on Facebook Messenger, [@coconutbot](https://www.messenger.
 - Install with [npm](https://www.npmjs.com): `npm install`
 - Set up Azure Cognitive Services, LUIS and mLab MongoDB
 - Run setup and add environmental variables to gulpfile.js: `node setup.js`
-- Transpile to ES5 and run nodemon dev server: `gulp dev`
 - Run tests: `npm test`
-- Interact with your bot using the [Bot Framework Emulator](https://download.botframework.com/bf-v3/tools/emulator/publish.htm)
+- Transpile to ES5 and run nodemon dev server with [Gulp](http://gulpjs.com/): `gulp`
+- Interact with your bot using the [Bot Framework Emulator](https://docs.botframework.com/en-us/tools/bot-framework-emulator/)
+- Each time you make changes to the code, gulp will rebuild and restart your server. Make sure to `start new conversation` in the emulator.
 
 ##### Deployment
 
