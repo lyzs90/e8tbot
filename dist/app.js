@@ -56,6 +56,7 @@ bot.dialog('/food', intents);
 
 // Respond to answers like 'no', 'bye', 'goodbye', 'thank you'
 intents.matches('SayBye', [function (session, args) {
+    /* istanbul ignore next  */
     setTimeout(function () {
         return session.send("Alright, let me know if you need anything else.");
     }, 2000);
@@ -65,6 +66,7 @@ intents.matches('SayBye', [function (session, args) {
 // Respond to answers like 'i hate <food>', 'don't want to eat <food>'
 intents.matches('SomethingElse', [function (session, args) {
     var task = builder.EntityRecognizer.findEntity(args.entities, 'Food');
+    /* istanbul ignore next  */
     setTimeout(function () {
         return session.send('Ah, something other than ' + task.entity + '?');
     }, 2000);
@@ -98,6 +100,7 @@ intents.matches('FindNearby', [function (session, args) {
         });
     });
 
+    /* istanbul ignore next  */
     setTimeout(function () {
         return session.send("What else would you like to search for?");
     }, 5000);

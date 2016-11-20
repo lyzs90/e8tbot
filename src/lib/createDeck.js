@@ -3,7 +3,7 @@ var shuffleArray = require('../lib/shuffleArray');
 
 var createDeck = (session, tmpDeck, docs) => {
     var arr = shuffleArray(docs[0].results);
-    arr.slice(0,5).forEach( (result) => {
+    arr.slice(0, 5).forEach( (result) => {
         var tmpCard = [
             new builder.HeroCard(session)
                 .title(result.Name[0].text)

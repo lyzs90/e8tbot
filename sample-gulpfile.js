@@ -11,8 +11,8 @@ gulp.task('build', () => {
         .pipe(gulp.dest('dist'));
 });
 
-// Task to start nodemon and handle restarts
-gulp.task('dev', () => {
+// Task to start nodemon and handle restarts. dependent on build task.
+gulp.task('dev', ['build'], () => {
   nodemon({
     script: './dist/app.js',
     env: {
