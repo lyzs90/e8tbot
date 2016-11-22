@@ -1,6 +1,6 @@
 "use strict";
 
-function shuffleArray(array) {
+var shuffleArray = function shuffleArray(array) {
     var currentIndex = array.length;
     var temporaryValue = void 0;
     var randomIndex = void 0;
@@ -18,6 +18,6 @@ function shuffleArray(array) {
     }
 
     return array;
-}
+};
 
 module.exports = shuffleArray;

@@ -1,14 +1,9 @@
-var assert = require('assert');
+const assert = require('assert');
 
-var findDocuments = (db, collection, selector, callback) => {
-    // Get the documents collection
-    const coll = db.collection(collection);
-    // Find some documents
-    coll
-        .find(selector)
+let findDocuments = (db, collection, selector, callback) => {
+    db.collection(collection).find(selector)
         .toArray((err, docs) => {
             assert.equal(err, null);
-            console.log('Query success');
             callback(docs);
         });
 }

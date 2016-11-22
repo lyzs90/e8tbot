@@ -1,10 +1,10 @@
-var builder = require('botbuilder');
-var shuffleArray = require('../lib/shuffleArray');
+const builder = require('botbuilder');
+const shuffleArray = require('../lib/shuffleArray');
 
-var createDeck = (session, tmpDeck, docs) => {
-    var arr = shuffleArray(docs[0].results);
+let createDeck = (session, tmpDeck, docs) => {
+    let arr = shuffleArray(docs[0].results);
     arr.slice(0, 5).forEach((result) => {
-        var tmpCard = [
+        let tmpCard = [
             new builder.HeroCard(session)
                 .title(result.Name[0].text)
                 .subtitle(`${result.Category[0].text}, ${result.Rating[0].text}`)

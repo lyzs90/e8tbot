@@ -1,4 +1,4 @@
-function shuffleArray (array) {
+let shuffleArray = (array) => {
     let currentIndex = array.length;
     let temporaryValue;
     let randomIndex;
