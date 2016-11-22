@@ -1,3 +1,5 @@
+'use strict';
+
 const restify = require('restify');
 const builder = require('botbuilder');
 const mongodb = require('mongodb');
@@ -5,16 +7,16 @@ const assert = require('assert');
 const findDocuments = require('./lib/findDocuments');
 const createDeck = require('./lib/createDeck');
 
-//=============================================================================
+// ============================================================================
 // Database Setup
-//=============================================================================
+// ============================================================================
 
 // Connect to MongoDB
 const uri = process.env.MONGODB_URI;
 
-//=============================================================================
+// ============================================================================
 // Bot Setup
-//=============================================================================
+// ============================================================================
 
 // Setup Restify Server
 const server = restify.createServer();
@@ -36,23 +38,23 @@ ${process.env.LUIS_ID}&subscription-key=${process.env.LUIS_SUB_KEY}`;
 const recognizer = new builder.LuisRecognizer(model);
 const intents = new builder.IntentDialog({ recognizers: [recognizer] });
 
-//=============================================================================
+// ============================================================================
 // Bot Dialogs
-//=============================================================================
+// ============================================================================
 
 // Welcome Dialog
 bot.dialog('/', [
     (session) => {
         // Send a card TODO: handle hi or weird reponses
         let card = new builder.HeroCard(session)
-            .title("Hi, I am Coconut")
-            .text("Your friendly neighbourhood food hunting bot")
+            .title('Hi, I am Coconut')
+            .text('Your friendly neighbourhood food hunting bot')
             .images([
-                 builder.CardImage.create(session, "https://s21.postimg.org/i8h4uu0if/logo_cropped.png")
+                builder.CardImage.create(session, 'https://s21.postimg.org/i8h4uu0if/logo_cropped.png')
             ]);
         let msg = new builder.Message(session).attachments([card]);
         session.send(msg);
-        session.send("If you would like me to recommend something nearby, just shout out your location :)");
+        session.send('If you would like me to recommend something nearby, just shout out your location :)');
         session.beginDialog('/food');
     }
 ]);
@@ -64,7 +66,7 @@ bot.dialog('/food', intents);
 intents.matches('SayBye', [
     (session, args) => {
         /* istanbul ignore next  */
-        setTimeout ( () => session.send("Alright, let me know if you need anything else."), 2000);
+        setTimeout(() => session.send('Alright, let me know if you need anything else.'), 2000);
         session.endDialog();
     }
 ]);
@@ -74,7 +76,7 @@ intents.matches('SomethingElse', [
     (session, args) => {
         let task = builder.EntityRecognizer.findEntity(args.entities, 'Food');
         /* istanbul ignore next  */
-        setTimeout ( () => session.send(`Ah, something other than ${task.entity}?`), 2000);
+        setTimeout(() => session.send(`Ah, something other than ${task.entity}?`), 2000);
         session.beginDialog('/food');
     }
 ]);
@@ -82,19 +84,18 @@ intents.matches('SomethingElse', [
 // Respond to answers like 'i want to eat <food>', '<food>', '<location>'
 intents.matches('FindNearby', [
     (session, args) => {
-
         // If Location TODO: add support for food queries
         let task = builder.EntityRecognizer.findEntity(args.entities, 'Location');
         session.send(`Searching for... ${task.entity}`);
 
         // Parameterized query TODO: add validation for queryString
         let regex = new RegExp(`^${task.entity}$`, 'i');
-        let selector = { "search" : regex };
+        let selector = { 'search': regex };
 
         // Execute MongoDB query
         mongodb.MongoClient.connect(uri, (err, db) => {
             assert.equal(null, err);
-            console.log("Connected successfully to server");
+            console.log('Connected successfully to server');
             findDocuments(db, process.env.MONGODB_COLLECTION, selector, (docs) => {
                 // Create deck of cards
                 let tmpDeck = [];
@@ -110,8 +111,8 @@ intents.matches('FindNearby', [
         });
 
         /* istanbul ignore next  */
-        setTimeout ( () => session.send("What else would you like to search for?"), 5000);
-            session.beginDialog('/food');
+        setTimeout(() => session.send('What else would you like to search for?'), 5000);
+        session.beginDialog('/food');
     }
 
 ]);

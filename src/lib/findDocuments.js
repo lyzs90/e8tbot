@@ -2,13 +2,13 @@ var assert = require('assert');
 
 var findDocuments = (db, collection, selector, callback) => {
     // Get the documents collection
-    var collection = db.collection(collection);
+    const coll = db.collection(collection);
     // Find some documents
-    collection
+    coll
         .find(selector)
-        .toArray( (err, docs) => {
+        .toArray((err, docs) => {
             assert.equal(err, null);
-            console.log("Query success");
+            console.log('Query success');
             callback(docs);
         });
 }

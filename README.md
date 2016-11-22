@@ -38,7 +38,7 @@ Coconut is available on Facebook Messenger, [@coconutbot](https://www.messenger.
 - Transpile to ES5 and run nodemon dev server with [Gulp](http://gulpjs.com/): `gulp`
 - Interact with your bot using the [Bot Framework Emulator](https://docs.botframework.com/en-us/tools/bot-framework-emulator/)
 - Each time you make changes to the code, gulp will rebuild and restart your server. Make sure to `start new conversation` in the emulator.
-- Before shipping, run your tests: `npm test`
+- Before shipping, run your tests: `gulp build` and `npm test`
 - And generate coverage stats: `npm run cover`
 
 ##### Deployment

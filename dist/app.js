@@ -7,16 +7,16 @@ var assert = require('assert');
 var findDocuments = require('./lib/findDocuments');
 var createDeck = require('./lib/createDeck');
 
-//=============================================================================
+// ============================================================================
 // Database Setup
-//=============================================================================
+// ============================================================================
 
 // Connect to MongoDB
 var uri = process.env.MONGODB_URI;
 
-//=============================================================================
+// ============================================================================
 // Bot Setup
-//=============================================================================
+// ============================================================================
 
 // Setup Restify Server
 var server = restify.createServer();
@@ -37,17 +37,17 @@ var model = 'https://api.projectoxford.ai/luis/v1/application?id=' + process.env
 var recognizer = new builder.LuisRecognizer(model);
 var intents = new builder.IntentDialog({ recognizers: [recognizer] });
 
-//=============================================================================
+// ============================================================================
 // Bot Dialogs
-//=============================================================================
+// ============================================================================
 
 // Welcome Dialog
 bot.dialog('/', [function (session) {
     // Send a card TODO: handle hi or weird reponses
-    var card = new builder.HeroCard(session).title("Hi, I am Coconut").text("Your friendly neighbourhood food hunting bot").images([builder.CardImage.create(session, "https://s21.postimg.org/i8h4uu0if/logo_cropped.png")]);
+    var card = new builder.HeroCard(session).title('Hi, I am Coconut').text('Your friendly neighbourhood food hunting bot').images([builder.CardImage.create(session, 'https://s21.postimg.org/i8h4uu0if/logo_cropped.png')]);
     var msg = new builder.Message(session).attachments([card]);
     session.send(msg);
-    session.send("If you would like me to recommend something nearby, just shout out your location :)");
+    session.send('If you would like me to recommend something nearby, just shout out your location :)');
     session.beginDialog('/food');
 }]);
 
@@ -58,7 +58,7 @@ bot.dialog('/food', intents);
 intents.matches('SayBye', [function (session, args) {
     /* istanbul ignore next  */
     setTimeout(function () {
-        return session.send("Alright, let me know if you need anything else.");
+        return session.send('Alright, let me know if you need anything else.');
     }, 2000);
     session.endDialog();
 }]);
@@ -75,19 +75,18 @@ intents.matches('SomethingElse', [function (session, args) {
 
 // Respond to answers like 'i want to eat <food>', '<food>', '<location>'
 intents.matches('FindNearby', [function (session, args) {
-
     // If Location TODO: add support for food queries
     var task = builder.EntityRecognizer.findEntity(args.entities, 'Location');
     session.send('Searching for... ' + task.entity);
 
     // Parameterized query TODO: add validation for queryString
     var regex = new RegExp('^' + task.entity + '$', 'i');
-    var selector = { "search": regex };
+    var selector = { 'search': regex };
 
     // Execute MongoDB query
     mongodb.MongoClient.connect(uri, function (err, db) {
         assert.equal(null, err);
-        console.log("Connected successfully to server");
+        console.log('Connected successfully to server');
         findDocuments(db, process.env.MONGODB_COLLECTION, selector, function (docs) {
             // Create deck of cards
             var tmpDeck = [];
@@ -102,7 +101,7 @@ intents.matches('FindNearby', [function (session, args) {
 
     /* istanbul ignore next  */
     setTimeout(function () {
-        return session.send("What else would you like to search for?");
+        return session.send('What else would you like to search for?');
     }, 5000);
     session.beginDialog('/food');
 }]);
