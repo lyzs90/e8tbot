@@ -36,7 +36,11 @@ Coconut is available on Facebook Messenger, [@coconutbot](https://www.messenger.
 - Set up Azure Cognitive Services, LUIS and mLab MongoDB
 - Run setup and add environmental variables to gulpfile.js: `node setup.js`
 - Transpile to ES5 and run nodemon dev server with [Gulp](http://gulpjs.com/): `gulp`
-- Interact with your bot using the [Bot Framework Emulator](https://docs.botframework.com/en-us/tools/bot-framework-emulator/)
+- Interact with your bot
+    - Using the [Bot Framework Emulator](https://docs.botframework.com/en-us/tools/bot-framework-emulator/) **OR**
+    - Directly from WebChat/Facebook Messenger
+        - Create a secure tunnel to your nodemon server using ngrok: `ngrok http 3978`
+        - Change your Bot Framework messaging endpoint to `https://<yourapp>.ngrok.io/api/messages`
 - Each time you make changes to the code, gulp will rebuild and restart your server. Make sure to `start new conversation` in the emulator.
 - Before shipping, run your tests: `gulp build` and `npm test`
 - And generate coverage stats: `npm run cover`
@@ -47,8 +51,10 @@ Coconut is available on Facebook Messenger, [@coconutbot](https://www.messenger.
 - Set up Travis CI and Coveralls
 - Create new Heroku app with mLab add-on
 - Deploy to Heroku `git push heroku master`
+- Set Bot Framework messaging endpoint to `https://<yourapp>.herokuapp.com/api/messages`
 - Configure Facebook App and Page for Messenger
 - Set up Facebook Messenger webhook
+- Get your Facebook App approved for Send/Receive API (pages_messaging)
 
 ## License
 

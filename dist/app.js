@@ -6,6 +6,7 @@ var mongodb = require('mongodb');
 var assert = require('assert');
 var findDocuments = require('./lib/findDocuments');
 var createDeck = require('./lib/createDeck');
+var shuffleArray = require('./lib/shuffleArray');
 
 // ============================================================================
 // Database Setup
@@ -44,12 +45,55 @@ var intents = new builder.IntentDialog({ recognizers: [recognizer] });
 // Welcome Dialog
 bot.dialog('/', [function (session) {
     // Send a card TODO: handle hi or weird reponses
-    var card = new builder.HeroCard(session).title('Hi, I am Coconut').text('Your friendly neighbourhood food hunting bot').images([builder.CardImage.create(session, 'https://s21.postimg.org/i8h4uu0if/logo_cropped.png')]);
+    var card = new builder.HeroCard(session).title('Hi ' + session.message.user.name + ', I am Coconut').text('Your friendly neighbourhood food hunting bot').images([builder.CardImage.create(session, 'https://s21.postimg.org/i8h4uu0if/logo_cropped.png')]);
     var msg = new builder.Message(session).attachments([card]);
     session.send(msg);
-    session.send('If you would like me to recommend something nearby, just shout out your location :)');
+    session.beginDialog('/facebook_location', { shareText: 'If you would like me to recommend something nearby, please send me your location :)' });
+}, function (session, results) {
+    console.log('Success: Received User Location');
+    session.send('Current location...\n            Latitude: ' + results.response.latitude + '\n            Longitude: ' + results.response.longitude);
+    // TODO: reverse Geocoding and string matching
+    session.send('That feature is still WIP. Please state your location.');
     session.beginDialog('/food');
 }]);
+
+// User Location Prompt
+bot.dialog('/facebook_location', new builder.SimpleDialog(function (session, args) {
+    args = args || {};
+    // initial setup
+    var initialRetry = 3;
+    session.dialogData.shareText = args.shareText || session.dialogData.shareText;
+    session.dialogData.wrongLocationText = args.wrongLocationText || session.dialogData.wrongLocationText;
+
+    var retry = session.dialogData.hasOwnProperty('maxRetries') ? session.dialogData.maxRetries : initialRetry;
+    var entities = session.message.entities;
+
+    // only dialogData has "maxRetries" property, otherwise do not check as first runs
+    // because using session data directly would possibly cause infinite loop
+    if (session.dialogData.hasOwnProperty('maxRetries') && Array.isArray(entities) && entities.length && entities[0].geo) {
+        session.endDialogWithResult({ response: entities[0].geo });
+    } else if (retry === 0) {
+        // max retry, quit
+        session.endDialogWithResult({});
+    } else {
+        if (retry < initialRetry) {
+            session.send(session.dialogData.wrongLocationText || 'Looks it is not a valid location.');
+        }
+
+        var replyMessage = new builder.Message(session).text(session.dialogData.shareText || 'Please share your location.');
+        replyMessage.sourceEvent({
+            facebook: {
+                quick_replies: [{
+                    content_type: 'location'
+                }]
+            }
+        });
+        session.send(replyMessage);
+
+        retry -= 1;
+        session.dialogData.maxRetries = retry;
+    }
+}));
 
 // Intents Dialog
 bot.dialog('/food', intents);
@@ -86,11 +130,11 @@ intents.matches('FindNearby', [function (session, args) {
     // Execute MongoDB query
     mongodb.MongoClient.connect(uri, function (err, db) {
         assert.equal(null, err);
-        console.log('Connected successfully to server');
+        console.log('Success: Connected to MongoDB');
         findDocuments(db, process.env.MONGODB_COLLECTION, selector, function (docs) {
             // Create deck of cards
             var tmpDeck = [];
-            createDeck(session, tmpDeck, docs);
+            createDeck(session, tmpDeck, docs, 5, shuffleArray);
             var msg = new builder.Message(session).attachmentLayout(builder.AttachmentLayout.carousel).attachments(tmpDeck);
 
             // Show deck as a carousel
@@ -106,4 +150,5 @@ intents.matches('FindNearby', [function (session, args) {
     session.beginDialog('/food');
 }]);
 
-intents.onDefault(builder.DialogAction.send("I'm sorry, I didn't quite get that. Please state your location."));
+// TODO: investigate why this doesnt handle defaults
+intents.onDefault(builder.DialogAction.send("I'm sorry, I didn't quite get that."));

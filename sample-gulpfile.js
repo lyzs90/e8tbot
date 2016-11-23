@@ -17,6 +17,8 @@ gulp.task('dev', ['build'], () => {
     script: './dist/app.js',
     env: {
         'NODE_ENV': 'development',
+        'MICROSOFT_APP_ID': '<Your Microsoft App ID>',
+        'MICROSOFT_APP_PASSWORD': '<Your Microsoft App Password>',
         'LUIS_ID': '<Your Luis ID>',
         'LUIS_SUB_KEY': '<Your LUIS Subscription Key>',
         'MONGODB_URI': '<Your MongoDB URI>',
