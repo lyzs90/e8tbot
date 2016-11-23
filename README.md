@@ -16,24 +16,13 @@ Coconut is available on Facebook Messenger, [@coconutbot](https://www.messenger.
 - Choice of food review websites
 - Personalized recommendations
 
-
-## Requirements
-
-- [Bot Framework](https://dev.botframework.com/)
-- [Azure Cognitive Services](https://azure.microsoft.com/en-us/services/cognitive-services/)
-- [Heroku](https://www.heroku.com/)
-- [Travis CI](https://travis-ci.org/)
-- [Coveralls](https://coveralls.io/)
-- [mLAb MongoDB](https://mlab.com/)
-- [Facebook Developer](https://developers.facebook.com/)
-
 ## Quick Start  
 
-##### Development
+#### Development
 
 - Clone this repo
 - Install with [npm](https://www.npmjs.com): `NODE_ENV=development npm install`
-- Set up Azure Cognitive Services, LUIS and mLab MongoDB
+- Set up [Azure Cognitive Services](https://azure.microsoft.com/en-us/services/cognitive-services/), [LUIS](https://www.luis.ai/) and [mLAb MongoDB](https://mlab.com/)
 - Run setup and add environmental variables to gulpfile.js: `node setup.js`
 - Transpile to ES5 and run nodemon dev server with [Gulp](http://gulpjs.com/): `gulp`
 - Interact with your bot
@@ -45,14 +34,14 @@ Coconut is available on Facebook Messenger, [@coconutbot](https://www.messenger.
 - Before shipping, run your tests: `gulp build` and `npm test`
 - And generate coverage stats: `npm run cover`
 
-##### Deployment
+#### Deployment
 
-- Register bot with Bot Framework
-- Set up Travis CI and Coveralls
-- Create new Heroku app with mLab add-on
+- Register bot with [Bot Framework](https://dev.botframework.com/)
+- Set up [Travis CI](https://travis-ci.org/) and [Coveralls](https://coveralls.io/)
+- Create new [Heroku](https://www.heroku.com/) app with mLab add-on
 - Deploy to Heroku `git push heroku master`
 - Set Bot Framework messaging endpoint to `https://<yourapp>.herokuapp.com/api/messages`
-- Configure Facebook App and Page for Messenger
+- Access [Facebook Developer](https://developers.facebook.com/) and create Facebook App and Page for Messenger
 - Set up Facebook Messenger webhook
 - Get your Facebook App approved for Send/Receive API (pages_messaging)
 
