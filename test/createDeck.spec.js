@@ -25,7 +25,6 @@ describe('Create Deck', () => {
     });
     it('should contain parameters extracted from the docs', () => {
         expect(tmpDeck[0].data.content.title).to.equal('testName');
-        expect(tmpDeck[0].data.content.subtitle).to.equal('testCategory, testRating');
-        expect(tmpDeck[0].data.content.text).to.equal('\ntestAddress');
+        expect(tmpDeck[0].data.content.subtitle).to.equal('testCategory, testRating, testAddress');
     });
 });
