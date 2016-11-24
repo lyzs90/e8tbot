@@ -1,3 +1,5 @@
+'use strict';
+
 const builder = require('botbuilder');
 
 let createDeck = (session, tmpDeck, docs, numCards, callback) => {

@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 var shuffleArray = function shuffleArray(array) {
     var currentIndex = array.length;

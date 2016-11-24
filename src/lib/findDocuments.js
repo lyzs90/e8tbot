@@ -1,3 +1,5 @@
+'use strict';
+
 const assert = require('assert');
 
 let findDocuments = (db, collection, selector, callback) => {

@@ -1,3 +1,5 @@
+'use strict';
+
 const expect = require('chai').expect;
 const createDeck = require('../dist/lib/createDeck');
 
