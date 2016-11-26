@@ -16,7 +16,7 @@ const intents = new builder.IntentDialog({ recognizers: [recognizer] });
 // Connect to MongoDB
 const uri = process.env.MONGODB_URI;
 
-const library = new builder.Library('food');
+const library = new builder.Library('getIntent');
 
 // Intents Dialog
 library.dialog('/', intents);
@@ -37,7 +37,7 @@ intents.matches('SomethingElse', [
         let task = builder.EntityRecognizer.findEntity(args.entities, 'Food');
         /* istanbul ignore next  */
         setTimeout(() => session.send(`Ah, something other than ${task.entity}?`), 2000);
-        session.beginDialog('food:/');
+        session.beginDialog('getIntent:/');
     }
 ]);
 
@@ -59,7 +59,7 @@ intents.matches('FindNearby', [
             findDocuments(db, process.env.MONGODB_COLLECTION, selector, (docs) => {
                 // Create deck of cards
                 let tmpDeck = [];
-                createDeck(session, tmpDeck, docs, 5, shuffleArray);
+                createDeck(session, tmpDeck, docs, 3, shuffleArray);
                 let msg = new builder.Message(session)
                     .attachmentLayout(builder.AttachmentLayout.carousel)
                     .attachments(tmpDeck);
@@ -72,7 +72,7 @@ intents.matches('FindNearby', [
 
         /* istanbul ignore next  */
         setTimeout(() => session.send('What else would you like to search for?'), 5000);
-        session.beginDialog('food:/');
+        session.beginDialog('getIntent:/');
     }
 
 ]);

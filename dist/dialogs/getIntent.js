@@ -15,7 +15,7 @@ var intents = new builder.IntentDialog({ recognizers: [recognizer] });
 // Connect to MongoDB
 var uri = process.env.MONGODB_URI;
 
-var library = new builder.Library('food');
+var library = new builder.Library('getIntent');
 
 // Intents Dialog
 library.dialog('/', intents);
@@ -37,7 +37,7 @@ intents.matches('SomethingElse', [function (session, args) {
     setTimeout(function () {
         return session.send('Ah, something other than ' + task.entity + '?');
     }, 2000);
-    session.beginDialog('food:/');
+    session.beginDialog('getIntent:/');
 }]);
 
 // Respond to answers like 'i want to eat <food>', '<food>', '<location>'
@@ -57,7 +57,7 @@ intents.matches('FindNearby', [function (session, args) {
         findDocuments(db, process.env.MONGODB_COLLECTION, selector, function (docs) {
             // Create deck of cards
             var tmpDeck = [];
-            createDeck(session, tmpDeck, docs, 5, shuffleArray);
+            createDeck(session, tmpDeck, docs, 3, shuffleArray);
             var msg = new builder.Message(session).attachmentLayout(builder.AttachmentLayout.carousel).attachments(tmpDeck);
 
             // Show deck as a carousel
@@ -70,7 +70,7 @@ intents.matches('FindNearby', [function (session, args) {
     setTimeout(function () {
         return session.send('What else would you like to search for?');
     }, 5000);
-    session.beginDialog('food:/');
+    session.beginDialog('getIntent:/');
 }]);
 
 // TODO: investigate why this doesnt handle defaults

@@ -21,6 +21,13 @@ const connector = new builder.ChatConnector({
 const bot = new builder.UniversalBot(connector);
 server.post('/api/messages', connector.listen());
 
+//=========================================================
+// Bots Middleware
+//=========================================================
+
+// Anytime the major version is incremented any existing conversations will be restarted.
+bot.use(builder.Middleware.dialogVersion({ version: 1.0, resetCommand: /^reset/i }));
+
 // ============================================================================
 // Bot Dialogs
 // ============================================================================
@@ -37,19 +44,37 @@ bot.dialog('/', [
             ]);
         let msg = new builder.Message(session).attachments([card]);
         session.send(msg);
-        session.beginDialog('location:/', {shareText: 'If you would like me to recommend something nearby, please send me your location :)'});
+        session.beginDialog('getLocation:/', {shareText: 'If you would like me to recommend something nearby, please send me your location :)'});
     },
     (session, results) => {
+        if (typeof results.response === 'undefined') {
+            console.log('Failure: Invalid Location');
+            session.endConversation('You entered an invalid location. We need to start over.');
+        };
         console.log('Success: Received User Location');
-        session.send(`Current location...
-            Latitude: ${results.response.latitude}
-            Longitude: ${results.response.longitude}`);
-        // TODO: reverse Geocoding and string matching
-        session.send('That feature is still WIP. Please state your location.')
-        session.beginDialog('food:/');
+        // Persist user location
+        session.userData.location = results.response;
+        // TODO: do reverse geocoding here
+        session.send('Finding places near you...');
+        // Pass user location as args to nearbyRestaurants dialog
+        session.beginDialog('nearbyRestaurants:/', session.userData.location);
+    },
+    (session) => {
+        setTimeout(() => builder.Prompts.choice(session, 'What would you like to do next?', ['More Results', 'Bye']), 5000);
+    },
+    (session, results) => {
+        if (results.response.entity === 'More Results') {
+            console.log('Ending conversation...');
+            session.endConversation('WIP. Ending conversation...');
+        };
+        if (results.response.entity === 'Bye') {
+            console.log('Ending conversation...');
+            session.endConversation('Have a good day (:');
+        };
     }
 ]);
 
 // Sub-Dialogs
-bot.library(require('./dialogs/location'));
-bot.library(require('./dialogs/food'));
+bot.library(require('./dialogs/getLocation'));
+bot.library(require('./dialogs/nearbyRestaurants'));
+//bot.library(require('./dialogs/getIntent')); TODO: handle free form queries

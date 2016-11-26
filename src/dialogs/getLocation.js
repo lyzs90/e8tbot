@@ -2,14 +2,14 @@
 
 const builder = require('botbuilder');
 
-const library = new builder.Library('location');
+const library = new builder.Library('getLocation');
 
 // User Location Dialog TODO: handle rejection
 library.dialog('/', new builder.SimpleDialog(
     (session, args) => {
         args = args || {};
         // initial setup
-        let initialRetry = 3;
+        let initialRetry = 2;
         session.dialogData.shareText = args.shareText || session.dialogData.shareText;
         session.dialogData.wrongLocationText = args.wrongLocationText || session.dialogData.wrongLocationText;
 
