@@ -4,16 +4,16 @@
 
 Coconut is a friendly local Node.js Chatbot built using the Microsoft Bot Framework. Natural Language Processing is handled by [LUIS](https://www.luis.ai/).
 
-If you're starving and would like recommendations for food in the vicinity, look no further. At the moment, Coconut will make recommendations from [HungryGoWhere](www.hungrygowhere.com) when you enter a location e.g. Raffles Place.  
+If you're starving and would like recommendations for food in the vicinity, look no further. At the moment, Coconut will make recommendations from [HungryGoWhere](www.hungrygowhere.com) when you submit your location.
 
 Coconut is available on Facebook Messenger, [@coconutbot](https://www.messenger.com/t/coconutbot).
 
 ## Upcoming Features
 
-- More locations
-- Search by dish or type of cuisine
-- Submit your current location
-- Choice of food review websites
+- Rank by distance or ratings
+- Specify type of food to narrow down your choices
+- Get directions and show routes
+- Add more food review websites
 - Personalized recommendations
 
 ## Quick Start  
