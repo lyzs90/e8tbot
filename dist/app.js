@@ -2,6 +2,7 @@
 
 var restify = require('restify');
 var builder = require('botbuilder');
+var request = require('request');
 
 // ============================================================================
 // Bot Setup
@@ -21,12 +22,18 @@ var connector = new builder.ChatConnector({
 var bot = new builder.UniversalBot(connector);
 server.post('/api/messages', connector.listen());
 
-//=========================================================
+//=============================================================================
 // Bots Middleware
-//=========================================================
+//=============================================================================
 
 // Anytime the major version is incremented any existing conversations will be restarted.
 bot.use(builder.Middleware.dialogVersion({ version: 1.0, resetCommand: /^reset/i }));
+
+//=============================================================================
+// Google Maps Geocoding API
+//=============================================================================
+
+var baseUrl = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=';
 
 // ============================================================================
 // Bot Dialogs
@@ -38,19 +45,32 @@ bot.dialog('/', [function (session) {
     var card = new builder.HeroCard(session).title('Hi ' + session.message.user.name + ', I am Coconut').text('Your friendly neighbourhood food hunting bot').images([builder.CardImage.create(session, 'https://s21.postimg.org/i8h4uu0if/logo_cropped.png')]);
     var msg = new builder.Message(session).attachments([card]);
     session.send(msg);
-    session.beginDialog('getLocation:/', { shareText: 'If you would like me to recommend something nearby, please send me your location :)' });
+    session.beginDialog('getLocation:/', { shareText: 'If you would like me to recommend something nearby, please send me your location.' });
 }, function (session, results) {
     if (typeof results.response === 'undefined') {
         console.log('Failure: Invalid Location');
-        session.endConversation('You entered an invalid location. We need to start over.');
+        session.endConversation('You entered an invalid location. Let\'s start over.');
     };
     console.log('Success: Received User Location');
+
     // Persist user location
     session.userData.location = results.response;
-    // TODO: do reverse geocoding here
-    session.send('Finding places near you...');
+
+    // Reverse geocoding
+    var url = '' + baseUrl + session.userData.location.latitude + ',' + session.userData.location.longitude + '&key=' + process.env.GOOGLE_GEOCODE_KEY;
+    request(url, function (err, res, body) {
+        if (!err && res.statusCode === 200) {
+            console.log('Success: Location reverse geocoded');
+            var userAddress = JSON.parse(body).results[0].formatted_address;
+            session.send('Finding places near ' + userAddress + '...');
+        } else {
+            console.log(err);
+        }
+    });
     // Pass user location as args to nearbyRestaurants dialog
-    session.beginDialog('nearbyRestaurants:/', session.userData.location);
+    setTimeout(function () {
+        return session.beginDialog('nearbyRestaurants:/', session.userData.location);
+    }, 1000);
 }, function (session) {
     setTimeout(function () {
         return builder.Prompts.choice(session, 'What would you like to do next?', ['More Results', 'Bye']);

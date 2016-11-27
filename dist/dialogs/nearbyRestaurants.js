@@ -14,8 +14,6 @@ var library = new builder.Library('nearbyRestaurants');
 
 // Nearby Restaurants Dialog
 library.dialog('/', [function (session) {
-    console.log(session.userData.location);
-
     // Parameterized query
     var selector = {
         'geometry': {
@@ -42,7 +40,7 @@ library.dialog('/', [function (session) {
         // End conversation if no results found
         if (docs.length === 0) {
             console.log('Ending conversation...');
-            session.endConversation('Sorry, I couldn\'t find anything nearby. We have to start over ):');
+            session.endConversation('Sorry, I couldn\'t find anything nearby. We have to start over :(');
         }
         return shuffleArray(docs);
     }).then(function (arr) {
@@ -54,12 +52,13 @@ library.dialog('/', [function (session) {
         var msg = new builder.Message(session).attachmentLayout(builder.AttachmentLayout.carousel).attachments(tmpDeck);
         console.log('Success: Carousel Created');
         session.send(msg);
+    }).then(function () {
+        console.log('Ending dialog...');
+        session.endDialog();
     }).catch(function (err) {
+        console.log('Failure: Carousel not sent');
         throw err;
     });
-
-    console.log('Ending dialog...');
-    session.endDialog();
 }]);
 
 module.exports = library;

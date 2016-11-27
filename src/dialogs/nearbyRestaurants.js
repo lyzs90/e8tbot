@@ -15,8 +15,6 @@ const library = new builder.Library('nearbyRestaurants');
 // Nearby Restaurants Dialog
 library.dialog('/', [
     (session) => {
-        console.log(session.userData.location);
-
         // Parameterized query
         let selector = {
             'geometry': {
@@ -48,7 +46,7 @@ library.dialog('/', [
                 // End conversation if no results found
                 if (docs.length === 0) {
                     console.log('Ending conversation...');
-                    session.endConversation('Sorry, I couldn\'t find anything nearby. We have to start over ):');
+                    session.endConversation('Sorry, I couldn\'t find anything nearby. We have to start over :(');
                 }
                 return shuffleArray(docs);
             })
@@ -64,12 +62,14 @@ library.dialog('/', [
                 console.log('Success: Carousel Created');
                 session.send(msg);
             })
+            .then(() => {
+                console.log('Ending dialog...');
+                session.endDialog();
+            })
             .catch((err) => {
+                console.log('Failure: Carousel not sent');
                 throw err;
             });
-
-        console.log('Ending dialog...');
-        session.endDialog();
     }
 ]);
 

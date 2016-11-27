@@ -15,6 +15,7 @@
     "bluebird": "^3.4.6",
     "botbuilder": "^3.4.4",
     "mongodb": "^2.2.11",
+    "request": "^2.79.0",
     "restify": "^4.2.0"
   },
   "devDependencies": {

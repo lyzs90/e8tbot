@@ -2,6 +2,7 @@
 
 const restify = require('restify');
 const builder = require('botbuilder');
+const request = require('request');
 
 // ============================================================================
 // Bot Setup
@@ -21,12 +22,18 @@ const connector = new builder.ChatConnector({
 const bot = new builder.UniversalBot(connector);
 server.post('/api/messages', connector.listen());
 
-//=========================================================
+//=============================================================================
 // Bots Middleware
-//=========================================================
+//=============================================================================
 
 // Anytime the major version is incremented any existing conversations will be restarted.
 bot.use(builder.Middleware.dialogVersion({ version: 1.0, resetCommand: /^reset/i }));
+
+//=============================================================================
+// Google Maps Geocoding API
+//=============================================================================
+
+const baseUrl = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=';
 
 // ============================================================================
 // Bot Dialogs
@@ -44,20 +51,31 @@ bot.dialog('/', [
             ]);
         let msg = new builder.Message(session).attachments([card]);
         session.send(msg);
-        session.beginDialog('getLocation:/', {shareText: 'If you would like me to recommend something nearby, please send me your location :)'});
+        session.beginDialog('getLocation:/', {shareText: 'If you would like me to recommend something nearby, please send me your location.'});
     },
     (session, results) => {
         if (typeof results.response === 'undefined') {
             console.log('Failure: Invalid Location');
-            session.endConversation('You entered an invalid location. We need to start over.');
+            session.endConversation('You entered an invalid location. Let\'s start over.');
         };
         console.log('Success: Received User Location');
+
         // Persist user location
         session.userData.location = results.response;
-        // TODO: do reverse geocoding here
-        session.send('Finding places near you...');
+
+        // Reverse geocoding
+        let url = `${baseUrl}${session.userData.location.latitude},${session.userData.location.longitude}&key=${process.env.GOOGLE_GEOCODE_KEY}`;
+        request(url, (err, res, body) => {
+            if (!err && res.statusCode === 200) {
+                console.log('Success: Location reverse geocoded');
+                let userAddress = JSON.parse(body).results[0].formatted_address;
+                session.send(`Finding places near ${userAddress}...`);
+            } else {
+                console.log(err);
+            }
+        });
         // Pass user location as args to nearbyRestaurants dialog
-        session.beginDialog('nearbyRestaurants:/', session.userData.location);
+        setTimeout(() => session.beginDialog('nearbyRestaurants:/', session.userData.location), 1000);
     },
     (session) => {
         setTimeout(() => builder.Prompts.choice(session, 'What would you like to do next?', ['More Results', 'Bye']), 5000);
