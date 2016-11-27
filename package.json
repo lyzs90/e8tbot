@@ -17,6 +17,7 @@
     "babel-register": "^6.18.0",
     "bluebird": "^3.4.6",
     "botbuilder": "^3.4.4",
+    "gulp": "^3.9.1",
     "gulp-babel": "^6.1.2",
     "mongodb": "^2.2.11",
     "request": "^2.79.0",

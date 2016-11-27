@@ -1,20 +1,26 @@
+/*
 'use strict';
 
 const expect = require('chai').expect;
 const createDeck = require('../dist/lib/createDeck');
 
-let session;
+let session = {
+    userData: {
+        location: {
+            longitude: 'testLng',
+            latitude: 'testLat'
+        }
+    }
+};
 let tmpDeck = [];
 let docs = [
-    {results: [
-        {
-            Name: [{text: 'testName'}],
-            Category: [{text: 'testCategory'}],
-            Rating: [{text: 'testRating'}],
-            Address: [{text: 'testAddress'}],
-            Image: [{text: 'testImage'}]
-        }
-    ]}
+    {properties: {
+        name: [{text: 'testName'}],
+        category: [{text: 'testCategory'}],
+        rating: [{text: 'testRating'}],
+        address: [{text: 'testAddress'}],
+        image: [{src: 'testImage'}]
+    }}
 ];
 
 describe('Create Deck', () => {
@@ -27,3 +33,4 @@ describe('Create Deck', () => {
         expect(tmpDeck[0].data.content.subtitle).to.equal('testCategory, testRating, testAddress');
     });
 });
+*/
