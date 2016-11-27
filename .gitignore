@@ -2,5 +2,6 @@
 /coverage
 /scraper
 /js
+findDocuments.spec.js
 gulpfile.js
 test-mongodb.js

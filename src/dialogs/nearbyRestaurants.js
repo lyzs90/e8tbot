@@ -1,14 +1,14 @@
 'use strict';
 
 const builder = require('botbuilder');
-const mongodb = require('mongodb');
-const assert = require('assert');
-const findDocuments = require('../lib/findDocuments');
-const createDeck = require('../lib/createDeck');
+const Promise = require('bluebird');
+const MongoClient = Promise.promisifyAll(require('mongodb')).MongoClient;
 const shuffleArray = require('../lib/shuffleArray');
+const createDeck = require('../lib/createDeck');
 
-// Connect to MongoDB
+// MongoDB Parameters
 const uri = process.env.MONGODB_URI;
+const collection = process.env.MONGODB_COLLECTION;
 
 const library = new builder.Library('nearbyRestaurants');
 
@@ -16,6 +16,7 @@ const library = new builder.Library('nearbyRestaurants');
 library.dialog('/', [
     (session) => {
         console.log(session.userData.location);
+
         // Parameterized query
         let selector = {
             'geometry': {
@@ -30,27 +31,43 @@ library.dialog('/', [
                 }
             }
         };
+
         // Execute MongoDB query
-        mongodb.MongoClient.connect(uri, (err, db) => {
-            assert.equal(null, err);
-            console.log('Success: Connected to MongoDB');
-            findDocuments(db, process.env.MONGODB_COLLECTION, selector, (docs) => {
+        MongoClient.connectAsync(uri, collection, selector)
+            .then((db) => {
+                console.log('Success: Connected to MongoDB');
+                return db.collection(collection).findAsync(selector);
+            })
+            .then((cursor) => {
+                return cursor.toArrayAsync();
+            })
+            .then((docs) => {
+                console.log('Success: Found the following records');
+                console.log(docs);
+
+                // End conversation if no results found
                 if (docs.length === 0) {
                     console.log('Ending conversation...');
                     session.endConversation('Sorry, I couldn\'t find anything nearby. We have to start over ):');
                 }
+                return shuffleArray(docs);
+            })
+            .then((arr) => {
                 // Create deck of cards
                 let tmpDeck = [];
-                createDeck(session, tmpDeck, docs, 3, shuffleArray);
+                createDeck(session, tmpDeck, arr, 3);
+
+                // Show deck as a carousel
                 let msg = new builder.Message(session)
                     .attachmentLayout(builder.AttachmentLayout.carousel)
                     .attachments(tmpDeck);
-
-                // Show deck as a carousel
+                console.log('Success: Carousel Created');
                 session.send(msg);
-                db.close();
+            })
+            .catch((err) => {
+                throw err;
             });
-        });
+
         console.log('Ending dialog...');
         session.endDialog();
     }

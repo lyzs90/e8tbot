@@ -16,7 +16,7 @@ let shuffleArray = (array) => {
         array[currentIndex] = array[randomIndex];
         array[randomIndex] = temporaryValue;
     }
-
+    console.log('Success: Array Shuffled');
     return array;
 }
 

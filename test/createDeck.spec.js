@@ -19,10 +19,7 @@ let docs = [
 
 describe('Create Deck', () => {
     it('should return an array of HeroCard objects', () => {
-        let callback = (x) => {
-            return x
-        };
-        createDeck(session, tmpDeck, docs, 1, callback);
+        createDeck(session, tmpDeck, docs, 1);
         expect(tmpDeck).to.be.a('array');
     });
     it('should contain parameters extracted from the docs', () => {

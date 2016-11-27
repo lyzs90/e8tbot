@@ -2,9 +2,7 @@
 
 const builder = require('botbuilder');
 
-let createDeck = (session, tmpDeck, docs, numCards, callback) => {
-    let arr = callback(docs);
-    console.log('Success: Array Shuffled');
+let createDeck = (session, tmpDeck, arr, numCards) => {
     arr.slice(0, numCards).forEach((result) => {
         let tmpCard = [
             new builder.HeroCard(session)
@@ -20,6 +18,7 @@ let createDeck = (session, tmpDeck, docs, numCards, callback) => {
         ];
         tmpDeck.push(...tmpCard);
     });
+    return tmpDeck;
 }
 
 module.exports = createDeck;
