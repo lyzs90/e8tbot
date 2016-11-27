@@ -7,28 +7,28 @@
     "test": "./node_modules/.bin/mocha --compilers js:babel-register",
     "cover": "./node_modules/.bin/istanbul cover ./node_modules/mocha/bin/_mocha ./test --compilers js:babel-register",
     "coveralls": "./node_modules/.bin/istanbul cover ./node_modules/mocha/bin/_mocha ./test --compilers js:babel-register --report lcovonly -- -R spec && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
-    "start": "node ./dist/app.js"
+    "start": "node ./dist/app.js",
+    "postinstall": "gulp build"
   },
   "author": "lyzs90",
   "license": "MIT",
   "dependencies": {
+    "babel-preset-es2015": "^6.18.0",
+    "babel-register": "^6.18.0",
     "bluebird": "^3.4.6",
     "botbuilder": "^3.4.4",
+    "gulp-babel": "^6.1.2",
     "mongodb": "^2.2.11",
     "request": "^2.79.0",
     "restify": "^4.2.0"
   },
   "devDependencies": {
-    "babel-preset-es2015": "^6.18.0",
-    "babel-register": "^6.18.0",
     "chai": "^3.5.0",
     "coveralls": "^2.11.14",
-    "gulp-babel": "^6.1.2",
     "gulp-nodemon": "^2.2.1",
     "istanbul": "^0.4.4",
     "mocha": "^3.1.2",
     "mocha-lcov-reporter": "^1.2.0",
-    "mongomock": "^0.1.2",
     "nodemon": "^1.11.0",
     "seedrandom": "^2.4.2"
   }

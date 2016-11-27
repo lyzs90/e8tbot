@@ -13,7 +13,8 @@ let createDeck = (session, tmpDeck, arr, numCards) => {
                         .tap(builder.CardAction.showImage(session, result.properties.image[0].src))
                 ])
                 .buttons([
-                    builder.CardAction.openUrl(session, result.properties.name[0].href, 'Reviews')
+                    builder.CardAction.openUrl(session, result.properties.name[0].href, 'Reviews'),
+                    builder.CardAction.openUrl(session, `https://www.google.com.sg/maps/dir/${session.userData.location.latitude},${session.userData.location.longitude}/${result.geometry.coordinates[1]},${result.geometry.coordinates[0]}`, 'Directions')
                 ])
         ];
         tmpDeck.push(...tmpCard);
