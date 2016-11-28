@@ -12,7 +12,6 @@ Coconut is available on Facebook Messenger, [@coconutbot](https://www.messenger.
 
 - Rank by distance or ratings
 - Specify type of food to narrow down your choices
-- Get directions and show routes
 - Add more food review websites
 - Personalized recommendations
 

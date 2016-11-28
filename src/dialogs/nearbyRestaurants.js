@@ -25,7 +25,7 @@ library.dialog('/', [
                             session.userData.location.longitude, session.userData.location.latitude
                         ]
                     },
-                    '$maxDistance': 1500
+                    '$maxDistance': 1200
                 }
             }
         };
