@@ -63,7 +63,7 @@ bot.dialog('/', [
         // Persist user location
         session.userData.location = results.response;
 
-        // Reverse geocoding
+        // Reverse geocoding TODO: cache results
         let url = `${baseUrl}${session.userData.location.latitude},${session.userData.location.longitude}&key=${process.env.GOOGLE_GEOCODE_KEY}`;
         request(url, (err, res, body) => {
             if (!err && res.statusCode === 200) {

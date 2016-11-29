@@ -3,7 +3,8 @@
 const builder = require('botbuilder');
 const Promise = require('bluebird');
 const MongoClient = Promise.promisifyAll(require('mongodb')).MongoClient;
-const shuffleArray = require('../lib/shuffleArray');
+//const shuffleArray = require('../lib/shuffleArray');
+const sortArray = require('../lib/sortArray');
 const createDeck = require('../lib/createDeck');
 
 // MongoDB Parameters
@@ -48,7 +49,8 @@ library.dialog('/', [
                     console.log('Ending conversation...');
                     session.endConversation('Sorry, I couldn\'t find anything nearby. We have to start over :(');
                 }
-                return shuffleArray(docs);
+                //return shuffleArray(docs);
+                return sortArray.byDistance(session, docs, sortArray.haversine);
             })
             .then((arr) => {
                 // Create deck of cards

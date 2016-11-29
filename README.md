@@ -6,7 +6,7 @@ Coconut is a friendly local Node.js Chatbot built using the Microsoft Bot Framew
 
 If you're starving and would like recommendations for food in the vicinity, look no further. At the moment, Coconut will make recommendations from [HungryGoWhere](www.hungrygowhere.com) when you submit your location.
 
-Coconut is available on Facebook Messenger, [@coconutbot](https://www.messenger.com/t/coconutbot).
+Coconut is available on Facebook Messenger, [@coconutbot](https://www.messenger.com/t/coconutbot) and Telegram [@coconutsgbot](https://telegram.me/Coconutsgbot). Note that **Send Location** only works on mobile.
 
 ## Upcoming Features
 

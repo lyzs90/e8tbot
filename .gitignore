@@ -6,3 +6,4 @@
 findDocuments.spec.js
 gulpfile.js
 test-mongodb.js
+test-sort.js
