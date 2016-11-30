@@ -42,21 +42,24 @@ const baseUrl = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=';
 // Welcome Dialog
 bot.dialog('/', [
     (session) => {
+        // Reset user location
+        session.userData.location = {};
+
         // Send a card
         let card = new builder.HeroCard(session)
-            .title(`Hi ${session.message.user.name}, I am Coconut`)
-            .text('Your friendly neighbourhood food hunting bot')
+            .title(`Hi ${session.message.user.name}, I am Coconut!`)
+            .text('Your friendly neighbourhood food hunting bot.')
             .images([
                 builder.CardImage.create(session, 'https://s21.postimg.org/i8h4uu0if/logo_cropped.png')
             ]);
         let msg = new builder.Message(session).attachments([card]);
         session.send(msg);
-        session.beginDialog('getLocation:/', {shareText: 'If you would like me to recommend something nearby, please send me your location.'});
+        session.beginDialog('getLocation:/', {shareText: 'Please send me your location or leave a message.'});
     },
     (session, results) => {
         if (typeof results.response === 'undefined') {
-            console.log('Failure: Invalid Location');
-            session.endConversation('You entered an invalid location. Let\'s start over.');
+            console.log('Failure: Invalid Choice');
+            session.endConversation('You entered an invalid choice. Let\'s start over.');
         };
         console.log('Success: Received User Location');
 
@@ -95,4 +98,4 @@ bot.dialog('/', [
 // Sub-Dialogs
 bot.library(require('./dialogs/getLocation'));
 bot.library(require('./dialogs/nearbyRestaurants'));
-//bot.library(require('./dialogs/getIntent')); TODO: handle free form queries
+bot.library(require('./dialogs/getIntent'));

@@ -11,7 +11,6 @@ library.dialog('/', new builder.SimpleDialog(
         // initial setup
         let initialRetry = 2;
         session.dialogData.shareText = args.shareText || session.dialogData.shareText;
-        session.dialogData.wrongLocationText = args.wrongLocationText || session.dialogData.wrongLocationText;
 
         let retry = session.dialogData.hasOwnProperty('maxRetries') ? session.dialogData.maxRetries : initialRetry;
         let entities = session.message.entities;
@@ -19,22 +18,35 @@ library.dialog('/', new builder.SimpleDialog(
         // only dialogData has "maxRetries" property, otherwise do not check as first runs
         // because using session data directly would possibly cause infinite loop
         if (session.dialogData.hasOwnProperty('maxRetries') && Array.isArray(entities) && entities.length && entities[0].geo) {
-            session.endDialogWithResult({response: entities[0].geo})
+            session.endDialogWithResult({response: entities[0].geo});
+        } else if (session.message.text === 'payloadIntent') {
+            session.send('What would you like to eat?');
+            session.beginDialog('getIntent:/');
         } else if (retry === 0) {
             // max retry, quit
             session.endDialogWithResult({});
+        } else if (/^.*bye.*$/i.test(session.message.text)) {
+            // if user says 'bye', end conversation
+            session.endConversation('Bye!');
         } else {
             if (retry < initialRetry) {
-                session.send(session.dialogData.wrongLocationText || 'Looks it is not a valid location.');
+                console.log(session.message.text);
+                session.send('You have to make a choice.');
             }
-
-            let replyMessage = new builder.Message(session).text(session.dialogData.shareText || 'Please share your location.');
+            // REVIEW: consider doing away with send message button, straight away go into intent dialog if user does not send location
+            let replyMessage = new builder.Message(session).text(session.dialogData.shareText);
             replyMessage.sourceEvent({
                 facebook: {
-                    quick_replies:
-                    [{
-                        content_type: 'location'
-                    }]
+                    quick_replies: [
+                        {
+                            content_type: 'location'
+                        },
+                        {
+                            content_type: 'text',
+                            title: 'Send Message',
+                            payload: 'payloadIntent'
+                        }
+                    ]
                 }
             });
             session.send(replyMessage);

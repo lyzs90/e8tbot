@@ -55,7 +55,7 @@ library.dialog('/', [
             .then((arr) => {
                 // Create deck of cards
                 let tmpDeck = [];
-                createDeck(session, tmpDeck, arr, 3);
+                createDeck(session, tmpDeck, arr, 5);
 
                 // Show deck as a carousel
                 let msg = new builder.Message(session)
