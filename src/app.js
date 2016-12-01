@@ -3,6 +3,7 @@
 const restify = require('restify');
 const builder = require('botbuilder');
 const request = require('request');
+const createDeck = require('./lib/createDeck');
 
 // ============================================================================
 // Bot Setup
@@ -63,7 +64,7 @@ bot.dialog('/', [
         };
         console.log('Success: Received User Location');
 
-        // Persist user location
+        // Persist user location to session
         session.userData.location = results.response;
 
         // Reverse geocoding TODO: cache results
@@ -85,8 +86,22 @@ bot.dialog('/', [
     },
     (session, results) => {
         if (results.response.entity === 'More Results') {
+            // TODO: refactor, do this in a new dialog loop
+            let [a, b, c, d, ...rest] = session.userData.arr;
+            let newArr = rest;
+
+            // Create deck of cards
+            let tmpDeck = [];
+            createDeck(session, tmpDeck, newArr, 4);
+
+            // Show deck as a carousel
+            let msg = new builder.Message(session)
+                .attachmentLayout(builder.AttachmentLayout.carousel)
+                .attachments(tmpDeck);
+            console.log('Success: Carousel Created');
+            session.send(msg);
             console.log('Ending conversation...');
-            session.endConversation('WIP. Ending conversation...');
+            session.endConversation('That\'s all I have for now! Goodbye (:');
         };
         if (results.response.entity === 'Bye') {
             console.log('Ending conversation...');

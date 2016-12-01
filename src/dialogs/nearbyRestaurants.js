@@ -42,7 +42,7 @@ library.dialog('/', [
             })
             .then((docs) => {
                 console.log('Success: Found the following records');
-                console.log(docs);
+                console.log(docs.length);
 
                 // End conversation if no results found
                 if (docs.length === 0) {
@@ -53,9 +53,12 @@ library.dialog('/', [
                 return sortArray.byDistance(session, docs, sortArray.haversine);
             })
             .then((arr) => {
+                // Persist results array to session.userData
+                session.userData.arr = arr
+
                 // Create deck of cards
                 let tmpDeck = [];
-                createDeck(session, tmpDeck, arr, 5);
+                createDeck(session, tmpDeck, arr, 4);
 
                 // Show deck as a carousel
                 let msg = new builder.Message(session)

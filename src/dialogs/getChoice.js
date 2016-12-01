@@ -4,7 +4,7 @@ const builder = require('botbuilder');
 
 const library = new builder.Library('getChoice');
 
-// User Location Dialog TODO: handle rejection
+// User Location Dialog
 library.dialog('/', new builder.SimpleDialog(
     (session, args) => {
         args = args || {};
