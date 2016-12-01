@@ -43,72 +43,72 @@ intents.matches('SomethingElse', [
 intents.matches('FindNearby', [
     (session, args) => {
         console.log('Success: Listening for Intent');
-        // Food Queries TODO: support location & crawl/add props for menu items
-        // FIXME: make failed search non-breaking
-        let task = builder.EntityRecognizer.findEntity(args.entities, 'Food');
-        try {
+        console.log(args.entities);
+
+        if (args.entities.length !== 0) {
+            let task = builder.EntityRecognizer.findEntity(args.entities, 'Food') || builder.EntityRecognizer.findEntity(args.entities, 'Location') || builder.EntityRecognizer.findEntity(args.entities, 'Cuisine');
             session.send(`Searching for... ${task.entity}`);
-        } catch (e) {
-            session.send('Sorry, I couldn\'t find anything. Do you want to try something else?');
+            console.log(task.entity);
+
+            // Parameterized query TODO: add validation for selector
+            let selector = {
+                'properties.name.0.text': {
+                    '$regex': `^.*${task.entity}.*$`,
+                    '$options': 'i'
+                }
+            }
+
+            // Execute MongoDB query
+            MongoClient.connectAsync(uri, collection, selector)
+                .then((db) => {
+                    console.log('Success: Connected to MongoDB');
+                    return db.collection(collection).findAsync(selector);
+                })
+                .then((cursor) => {
+                    return cursor.toArrayAsync();
+                })
+                .then((docs) => {
+                    console.log('Success: Found the following records');
+                    console.log(docs);
+
+                    // End conversation if no results found
+                    if (docs.length === 0) {
+                        console.log('Ending conversation...');
+                        session.endConversation('Sorry, I couldn\'t find anything. We have to start over :(');
+                    }
+                    // REVIEW: how does haversine work if no origin?
+                    console.log(session.userData.location);
+                    return sortArray.byDistance(session, docs, sortArray.haversine);
+                })
+                .then((arr) => {
+                    // Create deck of cards
+                    let tmpDeck = [];
+                    createDeck(session, tmpDeck, arr, 5);
+
+                    // Show deck as a carousel
+                    let msg = new builder.Message(session)
+                        .attachmentLayout(builder.AttachmentLayout.carousel)
+                        .attachments(tmpDeck);
+                    console.log('Success: Carousel Created');
+                    session.send(msg);
+                })
+                .then(() => {
+                    console.log('Restarting dialog...');
+                    setTimeout(() => session.send('What else would you like to search for?'), 5000);
+                    session.beginDialog('getIntent:/');
+                })
+                .catch((err) => {
+                    console.log('Failure: Carousel not sent');
+                    throw err;
+                });
+        }
+
+        if (args.entities.length === 0) {
+            session.send('Sorry, I couldn\'t find anything. Do you want to try something else? Eg. Food, Cuisine or Location.');
             session.beginDialog('getIntent:/');
         }
-
-        // Parameterized query TODO: add validation for selector
-        let selector = {
-            'properties.name.0.text': {
-                '$regex': `^.*${task.entity}.*$`,
-                '$options': 'i'
-            }
-        }
-
-        // Execute MongoDB query
-        MongoClient.connectAsync(uri, collection, selector)
-            .then((db) => {
-                console.log('Success: Connected to MongoDB');
-                return db.collection(collection).findAsync(selector);
-            })
-            .then((cursor) => {
-                return cursor.toArrayAsync();
-            })
-            .then((docs) => {
-                console.log('Success: Found the following records');
-                console.log(docs);
-
-                // End conversation if no results found
-                if (docs.length === 0) {
-                    console.log('Ending conversation...');
-                    session.endConversation('Sorry, I couldn\'t find anything. We have to start over :(');
-                }
-                // REVIEW: how does haversine work if no origin?
-                console.log(session.userData.location);
-                return sortArray.byDistance(session, docs, sortArray.haversine);
-            })
-            .then((arr) => {
-                // Create deck of cards
-                let tmpDeck = [];
-                createDeck(session, tmpDeck, arr, 5);
-
-                // Show deck as a carousel
-                let msg = new builder.Message(session)
-                    .attachmentLayout(builder.AttachmentLayout.carousel)
-                    .attachments(tmpDeck);
-                console.log('Success: Carousel Created');
-                session.send(msg);
-            })
-            .then(() => {
-                console.log('Restarting dialog...');
-                setTimeout(() => session.send('What else would you like to search for?'), 5000);
-                session.beginDialog('getIntent:/');
-            })
-            .catch((err) => {
-                console.log('Failure: Carousel not sent');
-                throw err;
-            });
     }
 
 ]);
-
-// TODO: investigate why this doesnt handle defaults
-intents.onDefault(builder.DialogAction.send("I'm sorry, I didn't quite get that."));
 
 module.exports = library;

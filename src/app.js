@@ -48,13 +48,13 @@ bot.dialog('/', [
         // Send a card
         let card = new builder.HeroCard(session)
             .title(`Hi ${session.message.user.name}, I am Coconut!`)
-            .text('Your friendly neighbourhood food hunting bot.')
+            .text('Your friendly food recommendation chatbot.')
             .images([
                 builder.CardImage.create(session, 'https://s21.postimg.org/i8h4uu0if/logo_cropped.png')
             ]);
         let msg = new builder.Message(session).attachments([card]);
         session.send(msg);
-        session.beginDialog('getLocation:/', {shareText: 'Please send me your location or leave a message.'});
+        session.beginDialog('getChoice:/', {shareText: 'To see what\'s available nearby, just send me your location.'});
     },
     (session, results) => {
         if (typeof results.response === 'undefined') {
@@ -96,6 +96,6 @@ bot.dialog('/', [
 ]);
 
 // Sub-Dialogs
-bot.library(require('./dialogs/getLocation'));
+bot.library(require('./dialogs/getChoice'));
 bot.library(require('./dialogs/nearbyRestaurants'));
 bot.library(require('./dialogs/getIntent'));

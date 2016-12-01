@@ -2,7 +2,7 @@
 
 const builder = require('botbuilder');
 
-const library = new builder.Library('getLocation');
+const library = new builder.Library('getChoice');
 
 // User Location Dialog TODO: handle rejection
 library.dialog('/', new builder.SimpleDialog(
@@ -20,7 +20,7 @@ library.dialog('/', new builder.SimpleDialog(
         if (session.dialogData.hasOwnProperty('maxRetries') && Array.isArray(entities) && entities.length && entities[0].geo) {
             session.endDialogWithResult({response: entities[0].geo});
         } else if (session.message.text === 'payloadIntent') {
-            session.send('What would you like to eat?');
+            session.send('Sure, what would you like to eat today?');
             session.beginDialog('getIntent:/');
         } else if (retry === 0) {
             // max retry, quit
@@ -43,7 +43,7 @@ library.dialog('/', new builder.SimpleDialog(
                         },
                         {
                             content_type: 'text',
-                            title: 'Send Message',
+                            title: 'Ask Directly',
                             payload: 'payloadIntent'
                         }
                     ]
