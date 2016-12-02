@@ -43,8 +43,9 @@ const baseUrl = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=';
 // Welcome Dialog
 bot.dialog('/', [
     (session) => {
-        // Reset user location
+        // Reset userData
         session.userData.location = {};
+        session.userData.skip = 0;
 
         // Send a card
         let card = new builder.HeroCard(session)
@@ -57,7 +58,7 @@ bot.dialog('/', [
         session.send(msg);
         session.beginDialog('getChoice:/', {shareText: 'To see what\'s available nearby, just send me your location.'});
     },
-    (session, results) => {
+    (session, results, next) => {
         if (typeof results.response === 'undefined') {
             console.log('Failure: Invalid Choice');
             session.endConversation('You entered an invalid choice. Let\'s start over.');
@@ -82,35 +83,12 @@ bot.dialog('/', [
         setTimeout(() => session.beginDialog('nearbyRestaurants:/', session.userData.location), 1000);
     },
     (session) => {
-        setTimeout(() => builder.Prompts.choice(session, 'What would you like to do next?', ['More Results', 'Bye']), 5000);
-    },
-    (session, results) => {
-        if (results.response.entity === 'More Results') {
-            // TODO: refactor, do this in a new dialog loop
-            let [a, b, c, d, e, ...rest] = session.userData.arr;
-            let newArr = rest;
-
-            // Create deck of cards
-            let tmpDeck = [];
-            createDeck(session, tmpDeck, newArr, 5);
-
-            // Show deck as a carousel
-            let msg = new builder.Message(session)
-                .attachmentLayout(builder.AttachmentLayout.carousel)
-                .attachments(tmpDeck);
-            console.log('Success: Carousel Created');
-            session.send(msg);
-            console.log('Ending conversation...');
-            session.endConversation('That\'s all I have for now! Goodbye (:');
-        };
-        if (results.response.entity === 'Bye') {
-            console.log('Ending conversation...');
-            session.endConversation('Have a good day (:');
-        };
+        session.beginDialog('moreResults:/');
     }
 ]);
 
 // Sub-Dialogs
 bot.library(require('./dialogs/getChoice'));
+bot.library(require('./dialogs/moreResults'));
 bot.library(require('./dialogs/nearbyRestaurants'));
 bot.library(require('./dialogs/getIntent'));

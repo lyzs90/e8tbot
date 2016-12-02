@@ -39,14 +39,14 @@ intents.matches('SomethingElse', [
     }
 ]);
 
-// Respond to answers like 'i want to eat <food>', '<food>', '<location>'
+// Respond to answers containing <food> <cuisine> <location> TODO: multiple entity searches
 intents.matches('FindNearby', [
     (session, args) => {
         console.log('Success: Listening for Intent');
         console.log(args.entities);
 
         if (args.entities.length !== 0) {
-            let task = builder.EntityRecognizer.findEntity(args.entities, 'Food') || builder.EntityRecognizer.findEntity(args.entities, 'Location') || builder.EntityRecognizer.findEntity(args.entities, 'Cuisine');
+            let task = builder.EntityRecognizer.findEntity(args.entities, 'Food') || builder.EntityRecognizer.findEntity(args.entities, 'Cuisine') || builder.EntityRecognizer.findEntity(args.entities, 'Location');
             session.send(`Searching for... ${task.entity}`);
             console.log(task.entity);
 
@@ -58,11 +58,14 @@ intents.matches('FindNearby', [
                 }
             }
 
-            // Execute MongoDB query
+            // Execute MongoDB find query TODO: refactor query as a resuable dialog
             MongoClient.connectAsync(uri, collection, selector)
                 .then((db) => {
                     console.log('Success: Connected to MongoDB');
-                    return db.collection(collection).findAsync(selector);
+                    return db.collection(collection).findAsync(selector, {
+                        'limit': 5,
+                        'skip': session.userData.skip
+                    });
                 })
                 .then((cursor) => {
                     return cursor.toArrayAsync();

@@ -31,13 +31,26 @@ library.dialog('/', [
             }
         };
 
-        // Execute MongoDB query
+        // Execute MongoDB count query
         MongoClient.connectAsync(uri, collection, selector)
             .then((db) => {
-                console.log('Success: Connected to MongoDB');
+                return db.collection(collection).countAsync(selector);
+            })
+            .then((count) => {
+                console.log(`Success: Total of ${count} records`);
+                session.userData.count = count;
+            })
+            .catch((err) => {
+                console.log('Failure: Count failed');
+                throw err;
+            });
+
+        // Execute MongoDB find query
+        MongoClient.connectAsync(uri, collection, selector)
+            .then((db) => {
                 return db.collection(collection).findAsync(selector, {
-                    'limit': 10,
-                    'skip': 0
+                    'limit': 5,
+                    'skip': session.userData.skip
                 });
             })
             .then((cursor) => {
@@ -72,6 +85,7 @@ library.dialog('/', [
             })
             .then(() => {
                 console.log('Ending dialog...');
+                session.userData.skip += 5;
                 session.endDialog();
             })
             .catch((err) => {

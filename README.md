@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/lyzs90/Coconut.svg?branch=master)](https://travis-ci.org/lyzs90/Coconut) [![Coverage Status](https://coveralls.io/repos/github/lyzs90/Coconut/badge.svg?branch=master)](https://coveralls.io/github/lyzs90/Coconut?branch=master)
 
-Coconut is a friendly local Node.js Chatbot built using the Microsoft Bot Framework. Natural Language Processing is handled by [LUIS](https://www.luis.ai/).
+Coconut is a food recommendation Chatbot built using Node.js and the Microsoft Bot Framework. Natural Language Processing is handled by [LUIS](https://www.luis.ai/).
 
 If you're starving and would like recommendations for food in the vicinity, look no further. At the moment, Coconut will make recommendations from [HungryGoWhere](www.hungrygowhere.com) when you submit your location.
 
