@@ -35,7 +35,10 @@ library.dialog('/', [
         MongoClient.connectAsync(uri, collection, selector)
             .then((db) => {
                 console.log('Success: Connected to MongoDB');
-                return db.collection(collection).findAsync(selector);
+                return db.collection(collection).findAsync(selector, {
+                    'limit': 10,
+                    'skip': 0
+                });
             })
             .then((cursor) => {
                 return cursor.toArrayAsync();
@@ -58,7 +61,7 @@ library.dialog('/', [
 
                 // Create deck of cards
                 let tmpDeck = [];
-                createDeck(session, tmpDeck, arr, 4);
+                createDeck(session, tmpDeck, arr, 5);
 
                 // Show deck as a carousel
                 let msg = new builder.Message(session)

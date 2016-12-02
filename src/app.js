@@ -28,7 +28,7 @@ server.post('/api/messages', connector.listen());
 //=============================================================================
 
 // Anytime the major version is incremented any existing conversations will be restarted.
-bot.use(builder.Middleware.dialogVersion({ version: 1.0, resetCommand: /^reset/i }));
+bot.use(builder.Middleware.dialogVersion({ version: 0.1, resetCommand: /^reset/i }));
 
 //=============================================================================
 // Google Maps Geocoding API
@@ -87,12 +87,12 @@ bot.dialog('/', [
     (session, results) => {
         if (results.response.entity === 'More Results') {
             // TODO: refactor, do this in a new dialog loop
-            let [a, b, c, d, ...rest] = session.userData.arr;
+            let [a, b, c, d, e, ...rest] = session.userData.arr;
             let newArr = rest;
 
             // Create deck of cards
             let tmpDeck = [];
-            createDeck(session, tmpDeck, newArr, 4);
+            createDeck(session, tmpDeck, newArr, 5);
 
             // Show deck as a carousel
             let msg = new builder.Message(session)
