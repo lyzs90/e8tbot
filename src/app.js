@@ -3,7 +3,6 @@
 const restify = require('restify');
 const builder = require('botbuilder');
 const request = require('request');
-const createDeck = require('./lib/createDeck');
 
 // ============================================================================
 // Bot Setup
@@ -56,9 +55,12 @@ bot.dialog('/', [
             ]);
         let msg = new builder.Message(session).attachments([card]);
         session.send(msg);
+
+        // Ask user to make a choice
         session.beginDialog('getChoice:/', {shareText: 'To see what\'s available nearby, just send me your location.'});
     },
-    (session, results, next) => {
+    (session, results) => {
+        // TODO: refactor
         if (typeof results.response === 'undefined') {
             console.log('Failure: Invalid Choice');
             session.endConversation('You entered an invalid choice. Let\'s start over.');
@@ -79,11 +81,9 @@ bot.dialog('/', [
                 console.log(err);
             }
         });
-        // Pass user location as args to nearbyRestaurants dialog
-        setTimeout(() => session.beginDialog('nearbyRestaurants:/', session.userData.location), 1000);
-    },
-    (session) => {
-        session.beginDialog('moreResults:/');
+
+        // Look for nearby restaurants
+        session.beginDialog('nearbyRestaurants:/');
     }
 ]);
 

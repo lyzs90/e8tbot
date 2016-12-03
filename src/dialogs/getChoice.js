@@ -16,7 +16,7 @@ library.dialog('/', new builder.SimpleDialog(
         let entities = session.message.entities;
 
         // only dialogData has "maxRetries" property, otherwise do not check as first runs
-        // because using session data directly would possibly cause infinite loop
+        // because using session data directly would possibly cause infinite loop TODO: refactor
         if (session.dialogData.hasOwnProperty('maxRetries') && Array.isArray(entities) && entities.length && entities[0].geo) {
             session.endDialogWithResult({response: entities[0].geo});
         } else if (session.message.text === 'payloadIntent') {

@@ -8,11 +8,12 @@ const library = new builder.Library('moreResults');
 library.dialog('/', [
     (session) => {
         console.log(`Cursor: ${session.userData.skip}, Count: ${session.userData.count}`);
-        setTimeout(() => builder.Prompts.choice(session, 'What would you like to do next?', ['More Results', 'Bye']), 5000);
+        builder.Prompts.choice(session, 'What would you like to do next?', ['More Results', 'Bye']);
     },
     (session, results) => {
+        // Loop till user says bye or run out of results
         if (results.response.entity === 'More Results' && session.userData.skip < session.userData.count) {
-            session.beginDialog('nearbyRestaurants:/', session.userData.location, session.userData.skip)
+            session.replaceDialog('nearbyRestaurants:/')
         };
         if (results.response.entity === 'More Results' && session.userData.skip >= session.userData.count) {
             console.log('Cursor exceeds total count')

@@ -86,7 +86,7 @@ library.dialog('/', [
             .then(() => {
                 console.log('Ending dialog...');
                 session.userData.skip += 5;
-                session.endDialog();
+                session.replaceDialog('moreResults:/');
             })
             .catch((err) => {
                 console.log('Failure: Carousel not sent');
