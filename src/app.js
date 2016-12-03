@@ -2,7 +2,6 @@
 
 const restify = require('restify');
 const builder = require('botbuilder');
-const request = require('request');
 
 // ============================================================================
 // Bot Setup
@@ -29,12 +28,6 @@ server.post('/api/messages', connector.listen());
 // Anytime the major version is incremented any existing conversations will be restarted.
 bot.use(builder.Middleware.dialogVersion({ version: 0.1, resetCommand: /^reset/i }));
 
-//=============================================================================
-// Google Maps Geocoding API
-//=============================================================================
-
-const baseUrl = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=';
-
 // ============================================================================
 // Bot Dialogs
 // ============================================================================
@@ -57,33 +50,7 @@ bot.dialog('/', [
         session.send(msg);
 
         // Ask user to make a choice
-        session.beginDialog('getChoice:/', {shareText: 'To see what\'s available nearby, just send me your location.'});
-    },
-    (session, results) => {
-        // TODO: refactor
-        if (typeof results.response === 'undefined') {
-            console.log('Failure: Invalid Choice');
-            session.endConversation('You entered an invalid choice. Let\'s start over.');
-        };
-        console.log('Success: Received User Location');
-
-        // Persist user location to session
-        session.userData.location = results.response;
-
-        // Reverse geocoding TODO: cache results
-        let url = `${baseUrl}${session.userData.location.latitude},${session.userData.location.longitude}&key=${process.env.GOOGLE_GEOCODE_KEY}`;
-        request(url, (err, res, body) => {
-            if (!err && res.statusCode === 200) {
-                console.log('Success: Location reverse geocoded');
-                let userAddress = JSON.parse(body).results[0].formatted_address;
-                session.send(`Finding places near ${userAddress}...`);
-            } else {
-                console.log(err);
-            }
-        });
-
-        // Look for nearby restaurants
-        session.beginDialog('nearbyRestaurants:/');
+        session.replaceDialog('getChoice:/', {shareText: 'To see what\'s available nearby, just send me your location.'});
     }
 ]);
 
@@ -92,3 +59,4 @@ bot.library(require('./dialogs/getChoice'));
 bot.library(require('./dialogs/moreResults'));
 bot.library(require('./dialogs/nearbyRestaurants'));
 bot.library(require('./dialogs/getIntent'));
+bot.library(require('./dialogs/setLocation'));

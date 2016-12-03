@@ -16,9 +16,10 @@ library.dialog('/', new builder.SimpleDialog(
         let entities = session.message.entities;
 
         // only dialogData has "maxRetries" property, otherwise do not check as first runs
-        // because using session data directly would possibly cause infinite loop TODO: refactor
+        // because using session data directly would possibly cause infinite loop TODO: refactor using CASE statements
         if (session.dialogData.hasOwnProperty('maxRetries') && Array.isArray(entities) && entities.length && entities[0].geo) {
-            session.endDialogWithResult({response: entities[0].geo});
+            let results = {response: entities[0].geo};
+            session.replaceDialog('setLocation:/', results);
         } else if (session.message.text === 'payloadIntent') {
             session.send('Sure, what would you like to eat today?');
             session.beginDialog('getIntent:/');
@@ -33,6 +34,7 @@ library.dialog('/', new builder.SimpleDialog(
                 console.log(session.message.text);
                 session.send('You have to make a choice.');
             }
+
             // REVIEW: consider doing away with send message button, straight away go into intent dialog if user does not send location
             let replyMessage = new builder.Message(session).text(session.dialogData.shareText);
             replyMessage.sourceEvent({

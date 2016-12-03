@@ -58,6 +58,20 @@ intents.matches('FindNearby', [
                 }
             }
 
+            // TODO: if selector is the same, dont hit db
+            MongoClient.connectAsync(uri, collection, selector)
+                .then((db) => {
+                    return db.collection(collection).countAsync(selector);
+                })
+                .then((count) => {
+                    console.log(`Success: Total of ${count} records`);
+                    session.userData.count = count;
+                })
+                .catch((err) => {
+                    console.log('Failure: Count failed');
+                    throw err;
+                });
+
             // Execute MongoDB find query TODO: refactor query as a resuable dialog
             MongoClient.connectAsync(uri, collection, selector)
                 .then((db) => {
@@ -71,8 +85,7 @@ intents.matches('FindNearby', [
                     return cursor.toArrayAsync();
                 })
                 .then((docs) => {
-                    console.log('Success: Found the following records');
-                    console.log(docs);
+                    console.log(`Success: Found ${docs.length} records`);
 
                     // End conversation if no results found
                     if (docs.length === 0) {
@@ -80,7 +93,7 @@ intents.matches('FindNearby', [
                         session.endConversation('Sorry, I couldn\'t find anything. We have to start over :(');
                     }
                     // REVIEW: how does haversine work if no origin?
-                    console.log(session.userData.location);
+                    console.log(`User location: ${session.userData.location}`);
                     return sortArray.byDistance(session, docs, sortArray.haversine);
                 })
                 .then((arr) => {
@@ -95,9 +108,9 @@ intents.matches('FindNearby', [
                     console.log('Success: Carousel Created');
                     session.send(msg);
                 })
-                .then(() => {
+                .then(() => { // TODO: how to fit in more results
                     console.log('Restarting dialog...');
-                    setTimeout(() => session.send('What else would you like to search for?'), 5000);
+                    session.send('What else would you like to search for?');
                     session.beginDialog('getIntent:/');
                 })
                 .catch((err) => {
@@ -106,8 +119,9 @@ intents.matches('FindNearby', [
                 });
         }
 
+        // Main error handler
         if (args.entities.length === 0) {
-            session.send('Sorry, I couldn\'t find anything. Do you want to try something else? Eg. Food, Cuisine or Location.');
+            session.send('Sorry, I couldn\'t find anything. Do you want to try something else?');
             session.beginDialog('getIntent:/');
         }
     }

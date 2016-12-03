@@ -31,7 +31,7 @@ library.dialog('/', [
             }
         };
 
-        // Execute MongoDB count query
+        // TODO: if selector is the same, dont hit db
         MongoClient.connectAsync(uri, collection, selector)
             .then((db) => {
                 return db.collection(collection).countAsync(selector);
@@ -57,8 +57,7 @@ library.dialog('/', [
                 return cursor.toArrayAsync();
             })
             .then((docs) => {
-                console.log('Success: Found the following records');
-                console.log(docs.length);
+                console.log(`Success: Found ${docs.length} records`);
 
                 // End conversation if no results found
                 if (docs.length === 0) {
