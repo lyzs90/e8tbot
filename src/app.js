@@ -28,6 +28,15 @@ server.post('/api/messages', connector.listen());
 // Anytime the major version is incremented any existing conversations will be restarted.
 bot.use(builder.Middleware.dialogVersion({ version: 0.1, resetCommand: /^reset/i }));
 
+//=========================================================
+// Bot Menu Actions
+//=========================================================
+
+bot.beginDialogAction('nearby', 'getLocation:/', { matches: /^nearby/i });
+bot.beginDialogAction('search', 'getIntent:/', { matches: /^search/i });
+bot.beginDialogAction('help', '/help', { matches: /^help/i });
+bot.endConversationAction('goodbye', 'Goodbye :)', { matches: /^goodbye/i });
+
 // ============================================================================
 // Bot Dialogs
 // ============================================================================
@@ -35,10 +44,6 @@ bot.use(builder.Middleware.dialogVersion({ version: 0.1, resetCommand: /^reset/i
 // Welcome Dialog
 bot.dialog('/', [
     (session) => {
-        // Reset userData
-        session.userData.location = {};
-        session.userData.skip = 0;
-
         // Send a card
         let card = new builder.HeroCard(session)
             .title(`Hi ${session.message.user.name}, I am Coconut!`)
@@ -50,13 +55,35 @@ bot.dialog('/', [
         session.send(msg);
 
         // Ask user to make a choice
-        session.replaceDialog('getChoice:/', {shareText: 'To see what\'s available nearby, just send me your location.'});
+        builder.Prompts.choice(session, 'What can I help you with?', ['What\'s Nearby', 'Search for Food']);
+    },
+    (session, results) => {
+        // TODO: handle more rejection options
+        if (/^.*(bye|goodbye|farewell|cya).*$/i.test(results.response.entity)) {
+            session.endDialog('Cya (:');
+        }
+        if (results.response.entity === 'What\'s Nearby') {
+            session.beginDialog('getLocation:/', results);
+        }
+        if (results.response.entity === 'Search for Food') {
+            session.beginDialog('getIntent:/', results);
+        }
+    },
+    (session, results) => {
+        // The menu runs a loop until the user chooses to (quit).
+        builder.Prompts.choice(session, 'Please choose a valid option.', ['getChoice', 'Bye']);
+    }
+]);
+
+bot.dialog('/help', [
+    function (session) {
+        session.endDialog('Global commands that are available anytime:\n\n**What\'s Nearby** - Get recommendations for nearby food.\n\n**Search for Food** - Craving for something? Just key that in!\n\n**Help** - You\'re looking at it.\n\n**Goodbye** - End this conversation.');
     }
 ]);
 
 // Sub-Dialogs
-bot.library(require('./dialogs/getChoice'));
+bot.library(require('./dialogs/getLocation'));
 bot.library(require('./dialogs/moreResults'));
-bot.library(require('./dialogs/nearbyRestaurants'));
+bot.library(require('./dialogs/getRestaurants'));
 bot.library(require('./dialogs/getIntent'));
 bot.library(require('./dialogs/setLocation'));

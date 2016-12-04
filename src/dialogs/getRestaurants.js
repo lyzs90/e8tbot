@@ -11,30 +11,15 @@ const createDeck = require('../lib/createDeck');
 const uri = process.env.MONGODB_URI;
 const collection = process.env.MONGODB_COLLECTION;
 
-const library = new builder.Library('nearbyRestaurants');
+const library = new builder.Library('getRestaurants');
 
 // Nearby Restaurants Dialog
 library.dialog('/', [
     (session) => {
-        // Parameterized query
-        let selector = {
-            'geometry': {
-                '$nearSphere': {
-                    '$geometry': {
-                        'type': 'Point',
-                        'coordinates': [
-                            session.userData.location.longitude, session.userData.location.latitude
-                        ]
-                    },
-                    '$maxDistance': 1200
-                }
-            }
-        };
-
         // TODO: if selector is the same, dont hit db
-        MongoClient.connectAsync(uri, collection, selector)
+        MongoClient.connectAsync(uri)
             .then((db) => {
-                return db.collection(collection).countAsync(selector);
+                return db.collection(collection).countAsync(session.userData.selector);
             })
             .then((count) => {
                 console.log(`Success: Total of ${count} records`);
@@ -46,11 +31,11 @@ library.dialog('/', [
             });
 
         // Execute MongoDB find query
-        MongoClient.connectAsync(uri, collection, selector)
+        MongoClient.connectAsync(uri)
             .then((db) => {
-                return db.collection(collection).findAsync(selector, {
+                return db.collection(collection).findAsync(session.userData.selector, {
                     'limit': 5,
-                    'skip': session.userData.skip
+                    'skip': session.userData.cursor
                 });
             })
             .then((cursor) => {
@@ -68,9 +53,6 @@ library.dialog('/', [
                 return sortArray.byDistance(session, docs, sortArray.haversine);
             })
             .then((arr) => {
-                // Persist results array to session.userData
-                session.userData.arr = arr
-
                 // Create deck of cards
                 let tmpDeck = [];
                 createDeck(session, tmpDeck, arr, 5);
@@ -84,7 +66,7 @@ library.dialog('/', [
             })
             .then(() => {
                 console.log('Ending dialog...');
-                session.userData.skip += 5;
+                session.userData.cursor += 5;
                 session.replaceDialog('moreResults:/');
             })
             .catch((err) => {

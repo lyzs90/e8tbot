@@ -2,6 +2,7 @@
 
 const builder = require('botbuilder');
 
+// Helper function to create carousels
 let createDeck = (session, tmpDeck, arr, numCards) => {
     arr.slice(0, numCards).forEach((result) => {
         let tmpCard = [

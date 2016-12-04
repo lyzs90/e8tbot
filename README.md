@@ -42,6 +42,7 @@ Coconut is available on Facebook Messenger, [@coconutbot](https://www.messenger.
 - Access [Facebook Developer](https://developers.facebook.com/) and create Facebook App and Page for Messenger
 - Set up Facebook Messenger webhook
 - Get your Facebook App approved for Send/Receive API (pages_messaging)
+- Add your Facebook Page Access Token to setup-fb.js then run `node setup-fb.js`
 
 ## License
 

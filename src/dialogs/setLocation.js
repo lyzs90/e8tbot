@@ -32,8 +32,23 @@ library.dialog('/', [
             }
         });
 
-        // Look for nearby restaurants
-        session.replaceDialog('nearbyRestaurants:/');
+        // Persist selector to session TODO: add validation for selector
+        session.userData.selector = {
+            'geometry': {
+                '$nearSphere': {
+                    '$geometry': {
+                        'type': 'Point',
+                        'coordinates': [
+                            session.userData.location.longitude, session.userData.location.latitude
+                        ]
+                    },
+                    '$maxDistance': 1200
+                }
+            }
+        };
+
+        // Look for restaurants that meet the criteria
+        session.replaceDialog('getRestaurants:/');
     }
 ]);
 

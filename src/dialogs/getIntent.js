@@ -1,11 +1,7 @@
 'use strict';
 
 const builder = require('botbuilder');
-const Promise = require('bluebird');
-const MongoClient = Promise.promisifyAll(require('mongodb')).MongoClient;
-//const shuffleArray = require('../lib/shuffleArray');
-const sortArray = require('../lib/sortArray');
-const createDeck = require('../lib/createDeck');
+const resetData = require('../lib/resetData');
 
 // Create LUIS recognizer that points at our model and add it as the root '/' dialog for our Cortana Bot.
 const model = `https://api.projectoxford.ai/luis/v1/application?id=\
@@ -13,14 +9,17 @@ ${process.env.LUIS_ID}&subscription-key=${process.env.LUIS_SUB_KEY}`;
 const recognizer = new builder.LuisRecognizer(model);
 const intents = new builder.IntentDialog({ recognizers: [recognizer] });
 
-// Connect to MongoDB
-const uri = process.env.MONGODB_URI;
-const collection = process.env.MONGODB_COLLECTION;
-
 const library = new builder.Library('getIntent');
 
 // Intents Dialog
 library.dialog('/', intents);
+
+intents.onBegin((session, results) => {
+    // Reset results before dialog begins
+    resetData(session, results);
+
+    session.send('Sure, what would you like to eat today?');
+});
 
 // Respond to answers like 'no', 'bye', 'goodbye', 'thank you'
 intents.matches('SayBye', [
@@ -50,73 +49,16 @@ intents.matches('FindNearby', [
             session.send(`Searching for... ${task.entity}`);
             console.log(task.entity);
 
-            // Parameterized query TODO: add validation for selector
-            let selector = {
+            // Persist selector to session TODO: add validation for selector
+            session.userData.selector = {
                 'properties.name.0.text': {
                     '$regex': `^.*${task.entity}.*$`,
                     '$options': 'i'
                 }
             }
 
-            // TODO: if selector is the same, dont hit db
-            MongoClient.connectAsync(uri, collection, selector)
-                .then((db) => {
-                    return db.collection(collection).countAsync(selector);
-                })
-                .then((count) => {
-                    console.log(`Success: Total of ${count} records`);
-                    session.userData.count = count;
-                })
-                .catch((err) => {
-                    console.log('Failure: Count failed');
-                    throw err;
-                });
-
-            // Execute MongoDB find query TODO: refactor query as a resuable dialog
-            MongoClient.connectAsync(uri, collection, selector)
-                .then((db) => {
-                    console.log('Success: Connected to MongoDB');
-                    return db.collection(collection).findAsync(selector, {
-                        'limit': 5,
-                        'skip': session.userData.skip
-                    });
-                })
-                .then((cursor) => {
-                    return cursor.toArrayAsync();
-                })
-                .then((docs) => {
-                    console.log(`Success: Found ${docs.length} records`);
-
-                    // End conversation if no results found
-                    if (docs.length === 0) {
-                        console.log('Ending conversation...');
-                        session.endConversation('Sorry, I couldn\'t find anything. We have to start over :(');
-                    }
-                    // REVIEW: how does haversine work if no origin?
-                    console.log(`User location: ${session.userData.location}`);
-                    return sortArray.byDistance(session, docs, sortArray.haversine);
-                })
-                .then((arr) => {
-                    // Create deck of cards
-                    let tmpDeck = [];
-                    createDeck(session, tmpDeck, arr, 5);
-
-                    // Show deck as a carousel
-                    let msg = new builder.Message(session)
-                        .attachmentLayout(builder.AttachmentLayout.carousel)
-                        .attachments(tmpDeck);
-                    console.log('Success: Carousel Created');
-                    session.send(msg);
-                })
-                .then(() => { // TODO: how to fit in more results
-                    console.log('Restarting dialog...');
-                    session.send('What else would you like to search for?');
-                    session.beginDialog('getIntent:/');
-                })
-                .catch((err) => {
-                    console.log('Failure: Carousel not sent');
-                    throw err;
-                });
+            // Look for restaurants that meet the criteria
+            session.replaceDialog('getRestaurants:/');
         }
 
         // Main error handler
