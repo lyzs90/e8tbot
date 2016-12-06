@@ -55,7 +55,7 @@ bot.dialog('/', [
         session.send(msg);
 
         // Ask user to make a choice
-        builder.Prompts.choice(session, 'What can I help you with?', ['What\'s Nearby', 'Search for Food']);
+        builder.Prompts.choice(session, 'What can I help you with?', ['What\'s Nearby', 'I want to eat...']);
     },
     (session, results) => {
         // TODO: handle more rejection options
@@ -65,7 +65,7 @@ bot.dialog('/', [
         if (results.response.entity === 'What\'s Nearby') {
             session.beginDialog('getLocation:/', results);
         }
-        if (results.response.entity === 'Search for Food') {
+        if (results.response.entity === 'I want to eat...') {
             session.beginDialog('getIntent:/', results);
         }
     },
@@ -77,7 +77,7 @@ bot.dialog('/', [
 
 bot.dialog('/help', [
     function (session) {
-        session.endDialog('Global commands that are available anytime:\n\n**What\'s Nearby** - Get recommendations for nearby food.\n\n**Search for Food** - Craving for something? Just key that in!\n\n**Help** - You\'re looking at it.\n\n**Goodbye** - End this conversation.');
+        session.endDialog('Global commands that are available anytime:\n\n**What\'s Nearby** - Get recommendations for nearby food.\n\n**I want to eat...** - Craving for something? Just key that in!\n\n**Help** - You\'re looking at it.\n\n**Goodbye** - End this conversation.');
     }
 ]);
 

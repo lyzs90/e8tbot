@@ -62,12 +62,12 @@ library.dialog('/', [
                     .attachmentLayout(builder.AttachmentLayout.carousel)
                     .attachments(tmpDeck);
                 console.log('Success: Carousel Created');
-                session.send(msg);
+                return session.send(msg);
             })
             .then(() => {
                 console.log('Ending dialog...');
                 session.userData.cursor += 5;
-                session.replaceDialog('moreResults:/');
+                return session.replaceDialog('moreResults:/');
             })
             .catch((err) => {
                 console.log('Failure: Carousel not sent');

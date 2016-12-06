@@ -1,7 +1,8 @@
 'use strict';
 
 const builder = require('botbuilder');
-const request = require('request');
+const Promise = require('bluebird');
+const request = Promise.promisify(require('request'));
 
 // Google Maps Geocoding API
 const baseUrl = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=';
@@ -20,18 +21,6 @@ library.dialog('/', [
         // Persist user location to session
         session.userData.location = results.response;
 
-        // Reverse geocoding TODO: cache results
-        let url = `${baseUrl}${session.userData.location.latitude},${session.userData.location.longitude}&key=${process.env.GOOGLE_GEOCODE_KEY}`;
-        request(url, (err, res, body) => {
-            if (!err && res.statusCode === 200) {
-                console.log('Success: Location reverse geocoded');
-                let userAddress = JSON.parse(body).results[0].formatted_address;
-                session.send(`Finding places near ${userAddress}...`);
-            } else {
-                console.log(err);
-            }
-        });
-
         // Persist selector to session TODO: add validation for selector
         session.userData.selector = {
             'geometry': {
@@ -47,8 +36,22 @@ library.dialog('/', [
             }
         };
 
-        // Look for restaurants that meet the criteria
-        session.replaceDialog('getRestaurants:/');
+        // Reverse geocoding TODO: cache results
+        let url = `${baseUrl}${session.userData.location.latitude},${session.userData.location.longitude}&key=${process.env.GOOGLE_GEOCODE_KEY}`;
+        request(url)
+            .then((res) => {
+                console.log('Success: Location reverse geocoded');
+                let userAddress = JSON.parse(res.body).results[0].formatted_address;
+                return session.send(`Finding places near ${userAddress}...`);
+            })
+            .then(() => {
+                // Look for restaurants that meet the criteria
+                return session.replaceDialog('getRestaurants:/');
+            })
+            .catch((err) => {
+                console.log('Failure: Invalid location');
+                throw err;
+            })
     }
 ]);
 
