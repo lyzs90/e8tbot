@@ -48,9 +48,6 @@ bot.dialog('/', [
         let card = new builder.HeroCard(session)
             .title(`Hi ${session.message.user.name}, I am Coconut!`)
             .text('Your friendly food recommendation chatbot.')
-            .images([
-                builder.CardImage.create(session, 'https://s21.postimg.org/i8h4uu0if/logo_cropped.png')
-            ]);
         let msg = new builder.Message(session).attachments([card]);
         session.send(msg);
 
@@ -68,10 +65,6 @@ bot.dialog('/', [
         if (results.response.entity === 'I want to eat...') {
             session.beginDialog('getIntent:/', results);
         }
-    },
-    (session, results) => {
-        // The menu runs a loop until the user chooses to (quit).
-        builder.Prompts.choice(session, 'Please choose a valid option.', ['getChoice', 'Bye']);
     }
 ]);
 
