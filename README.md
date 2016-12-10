@@ -1,12 +1,12 @@
-# [Coconut](https://www.messenger.com/t/coconutbot)
+# [E-8T](https://www.messenger.com/t/e8tbot)
 
 [![Build Status](https://travis-ci.org/lyzs90/Coconut.svg?branch=master)](https://travis-ci.org/lyzs90/Coconut) [![Coverage Status](https://coveralls.io/repos/github/lyzs90/Coconut/badge.svg?branch=master)](https://coveralls.io/github/lyzs90/Coconut?branch=master)
 
-Coconut is a food recommendation Chatbot built using Node.js and the Microsoft Bot Framework. Natural Language Processing is handled by [LUIS](https://www.luis.ai/).
+E-8T is a food recommendation Chatbot built using Node.js and the Microsoft Bot Framework. Natural Language Processing is handled by [LUIS](https://www.luis.ai/).
 
-If you're starving and would like recommendations for food in the vicinity, look no further. At the moment, Coconut will make recommendations from [HungryGoWhere](www.hungrygowhere.com) when you submit your location.
+If you're starving and would like recommendations for food in the vicinity, look no further. At the moment, E-8T will make recommendations from [HungryGoWhere](www.hungrygowhere.com) when you submit your location.
 
-Coconut is available on Facebook Messenger, [@coconutbot](https://www.messenger.com/t/coconutbot). Note that **Send Location** only works on mobile.
+E-8T is available on Facebook Messenger, [@e8tbot](https://www.messenger.com/t/e8tbot). Note that **Send Location** only works on mobile.
 
 ## Upcoming Features
 

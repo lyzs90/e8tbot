@@ -1,7 +1,7 @@
 {
-  "name": "Coconut",
+  "name": "E-8T",
   "version": "1.0.0",
-  "description": "Coconut is a Node.js Chatbot built using the Microsoft Bot Framework",
+  "description": "E-8T is a Node.js Chatbot built using the Microsoft Bot Framework",
   "main": "./dist/app.js",
   "scripts": {
     "test": "./node_modules/.bin/mocha --compilers js:babel-register",

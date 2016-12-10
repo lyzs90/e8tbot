@@ -26,7 +26,7 @@ server.post('/api/messages', connector.listen());
 //=============================================================================
 
 // Anytime the major version is incremented any existing conversations will be restarted.
-bot.use(builder.Middleware.dialogVersion({ version: 0.1, resetCommand: /^reset/i }));
+bot.use(builder.Middleware.dialogVersion({ version: 0.2, resetCommand: /^reset/i }));
 
 //=========================================================
 // Bot Menu Actions
@@ -46,7 +46,7 @@ bot.dialog('/', [
     (session) => {
         // Send a card
         let card = new builder.HeroCard(session)
-            .title(`Hi ${session.message.user.name}, I am Coconut!`)
+            .title(`Hi ${session.message.user.name}, I am E-8T!`)
             .text('Your friendly food recommendation chatbot.')
         let msg = new builder.Message(session).attachments([card]);
         session.send(msg);
