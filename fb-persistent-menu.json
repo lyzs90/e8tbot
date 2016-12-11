@@ -9,7 +9,7 @@
       },
       {
         "type":"postback",
-        "title":"I want to eat...",
+        "title":"General Search",
         "payload":"action?search"
       },
       {
