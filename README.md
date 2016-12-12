@@ -4,7 +4,7 @@
 
 E-8T is a food recommendation Chatbot built using Node.js and the Microsoft Bot Framework. Natural Language Processing is handled by [LUIS](https://www.luis.ai/).
 
-If you're starving and would like recommendations for food in the vicinity, look no further. At the moment, E-8T will make recommendations from [HungryGoWhere](www.hungrygowhere.com) when you submit your location.
+If you're starving and would like recommendations for food in the vicinity, look no further. At the moment, E-8T will make recommendations from [HungryGoWhere](https://www.hungrygowhere.com) when you submit your location.
 
 E-8T is available on Facebook Messenger, [@e8tbot](https://www.messenger.com/t/e8tbot). Note that **Send Location** only works on mobile.
 
