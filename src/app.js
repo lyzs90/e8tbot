@@ -35,7 +35,7 @@ bot.use(builder.Middleware.dialogVersion({ version: 0.2, resetCommand: /^reset/i
 bot.beginDialogAction('nearby', 'getLocation:/', { matches: /^nearby/i });
 bot.beginDialogAction('search', 'getIntent:/', { matches: /^search/i });
 bot.beginDialogAction('help', '/help', { matches: /^help/i });
-bot.endConversationAction('goodbye', 'Goodbye :)', { matches: /^goodbye/i });
+bot.endConversationAction('goodbye', 'Goodbye :)', { matches: /^(bye|goodbye|farewell|cya)/i });
 
 // ============================================================================
 // Bot Dialogs

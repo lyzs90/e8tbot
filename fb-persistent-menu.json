@@ -16,11 +16,6 @@
         "type":"postback",
         "title":"Help",
         "payload":"action?help"
-      },
-      {
-        "type":"postback",
-        "title":"Goodbye",
-        "payload":"action?goodbye"
       }
   ]
 }
