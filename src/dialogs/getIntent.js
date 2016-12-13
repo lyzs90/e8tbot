@@ -17,8 +17,11 @@ library.dialog('/', intents);
 intents.onBegin((session, results) => {
     // Reset results before dialog begins
     resetData(session, results);
-
-    session.send('Sure, what would you like to eat today?');
+    if (results.response !== 'Exception') {
+        session.send('Sure, what would you like to eat today?');
+    } else {
+        session.send('Please specify a type of food, cuisine or restaurant.');
+    }
 });
 
 // Respond to answers like 'no', 'bye', 'goodbye', 'thank you'
@@ -38,13 +41,13 @@ intents.matches('SomethingElse', [
     }
 ]);
 
-// Respond to answers containing <food> <cuisine> <location> TODO: multiple entity searches
+// Respond to answers containing <food> <cuisine> <location> <restaurant> TODO: multiple entity searches
 intents.matches('FindNearby', [
     (session, args) => {
         console.log('Success: Listening for Intent');
         console.log(args.entities);
 
-        if (args.entities.length !== 0) {
+        if (args.entities && args.entities.length !== 0) {
             let task = builder.EntityRecognizer.findEntity(args.entities, 'Food') || builder.EntityRecognizer.findEntity(args.entities, 'Cuisine') || builder.EntityRecognizer.findEntity(args.entities, 'Location');
             session.send(`Searching for... ${task.entity}`);
             console.log(task.entity);
@@ -59,12 +62,11 @@ intents.matches('FindNearby', [
 
             // Look for restaurants that meet the criteria
             session.replaceDialog('getRestaurants:/');
-        }
-
-        // Main error handler
-        if (args.entities.length === 0) {
+        } else {
+            // Main error handler
             session.send('Sorry, I couldn\'t find anything. Do you want to try something else?');
-            session.beginDialog('getIntent:/');
+            let results = {response: 'Exception'};
+            session.beginDialog('getIntent:/', results);
         }
     }
 

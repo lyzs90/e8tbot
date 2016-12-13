@@ -73,7 +73,23 @@ bot.dialog('/', [
 
 bot.dialog('/help', [
     function (session) {
-        session.endDialog('Global commands that are available anytime:\n\n**What\'s Nearby** - Get recommendations for nearby food.\n\n**General Search** - Craving for something? Just key that in!\n\n**Help** - You\'re looking at it.\n\n**Goodbye** - End this conversation.');
+        session.send('The following commands are globally available:')
+        // Send a carousel
+        let msg = new builder.Message(session)
+            .attachmentLayout(builder.AttachmentLayout.carousel)
+            .attachments([
+                new builder.HeroCard(session)
+                    .title('What\'s Nearby')
+                    .subtitle('Get recommendations for nearby food.'),
+                new builder.HeroCard(session)
+                    .title('General Search')
+                    .subtitle('Craving for something? Just key that in!'),
+                new builder.HeroCard(session)
+                    .title('Help')
+                    .subtitle('You\'re looking at it.')
+            ]);
+        session.send(msg);
+        session.endDialog();
     }
 ]);
 
