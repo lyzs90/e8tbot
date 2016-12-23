@@ -1,7 +1,7 @@
 'use strict';
 
-const restify = require('restify');
-const builder = require('botbuilder');
+import restify from 'restify';
+import builder from 'botbuilder';
 
 // ============================================================================
 // Bot Setup

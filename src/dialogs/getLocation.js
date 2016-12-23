@@ -1,7 +1,7 @@
 'use strict';
 
-const builder = require('botbuilder');
-const resetData = require('../lib/resetData');
+import builder from 'botbuilder';
+import resetData from '../lib/resetData';
 
 const library = new builder.Library('getLocation');
 

@@ -1,6 +1,9 @@
 {
   "name": "E-8T",
   "version": "1.0.0",
+  "engines": {
+    "node": "7.1.0"
+  },
   "description": "E-8T is a Node.js Chatbot built using the Microsoft Bot Framework",
   "main": "./dist/app.js",
   "scripts": {

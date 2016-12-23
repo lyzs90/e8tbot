@@ -1,6 +1,6 @@
 'use strict';
 
-const builder = require('botbuilder');
+import builder from 'botbuilder';
 
 // Helper function to create carousels
 let createDeck = (session, tmpDeck, arr, numCards) => {

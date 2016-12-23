@@ -13,6 +13,7 @@ E-8T is available on Facebook Messenger, [@e8tbot](https://www.messenger.com/t/e
 - Support for more food searches
 - Add more food review websites
 - Personalized recommendations
+- Proactive lunch suggestions
 
 ## Quick Start  
 

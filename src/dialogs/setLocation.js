@@ -1,8 +1,9 @@
 'use strict';
 
-const builder = require('botbuilder');
-const Promise = require('bluebird');
-const request = Promise.promisify(require('request'));
+import builder from 'botbuilder';
+import Promise from 'bluebird';
+import request from 'request';
+const requestAsync = Promise.promisify(request);
 
 // Google Maps Geocoding API
 const baseUrl = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=';
@@ -38,7 +39,7 @@ library.dialog('/', [
 
         // Reverse geocoding TODO: cache results
         let url = `${baseUrl}${session.userData.location.latitude},${session.userData.location.longitude}&key=${process.env.GOOGLE_GEOCODE_KEY}`;
-        request(url)
+        requestAsync(url)
             .then((res) => {
                 console.log('Success: Location reverse geocoded');
                 let userAddress = JSON.parse(res.body).results[0].formatted_address;

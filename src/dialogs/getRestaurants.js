@@ -1,11 +1,12 @@
 'use strict';
 
-const builder = require('botbuilder');
-const Promise = require('bluebird');
-const MongoClient = Promise.promisifyAll(require('mongodb')).MongoClient;
-//const shuffleArray = require('../lib/shuffleArray');
-const sortArray = require('../lib/sortArray');
-const createDeck = require('../lib/createDeck');
+import builder from 'botbuilder';
+import Promise from 'bluebird';
+import MongoClient from 'mongodb';
+const MongoClientAsync = Promise.promisifyAll(MongoClient);
+//import shuffleArray from '../lib/shuffleArray';
+import sortArray from '../lib/sortArray';
+import createDeck from '../lib/createDeck';
 
 // MongoDB Parameters
 const uri = process.env.MONGODB_URI;
@@ -17,7 +18,7 @@ const library = new builder.Library('getRestaurants');
 library.dialog('/', [
     (session) => {
         // TODO: if selector is the same, dont hit db
-        MongoClient.connectAsync(uri)
+        MongoClientAsync.connectAsync(uri)
             .then((db) => {
                 return db.collection(collection).countAsync(session.userData.selector);
             })
@@ -31,7 +32,7 @@ library.dialog('/', [
             });
 
         // Execute MongoDB find query
-        MongoClient.connectAsync(uri)
+        MongoClientAsync.connectAsync(uri)
             .then((db) => {
                 return db.collection(collection).findAsync(session.userData.selector, {
                     'limit': 5,

@@ -1,7 +1,7 @@
 'use strict';
 
-const builder = require('botbuilder');
-const resetData = require('../lib/resetData');
+import builder from 'botbuilder';
+import resetData from '../lib/resetData';
 
 // Create LUIS recognizer that points at our model and add it as the root '/' dialog for our Cortana Bot.
 const model = `https://api.projectoxford.ai/luis/v1/application?id=\

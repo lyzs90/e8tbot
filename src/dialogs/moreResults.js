@@ -1,6 +1,6 @@
 'use strict';
 
-const builder = require('botbuilder');
+import builder from 'botbuilder';
 
 const library = new builder.Library('moreResults');
 
