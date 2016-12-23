@@ -33,6 +33,5 @@ exports.byDistance = (session, arr, method) => {
         if (method(latO, lngO, latA, lngA) > method(latO, lngO, latB, lngB)) return 1;
         return 0;
     });
-    console.log('Success: Array sorted by distance');
     return arr;
 };
