@@ -34,6 +34,7 @@
     "mocha": "^3.1.2",
     "mocha-lcov-reporter": "^1.2.0",
     "nodemon": "^1.11.0",
-    "seedrandom": "^2.4.2"
+    "seedrandom": "^2.4.2",
+    "sinon": "^1.17.6"
   }
 }
